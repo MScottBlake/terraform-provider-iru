@@ -4,7 +4,7 @@ A Terraform provider for the Iru service.
 
 ## Requirements
 
-- [Terraform](https://www.terraform.io/downloads.html) >= 1.0
+- [Terraform](https://www.terraform.io/downloads.html) >= 1.14.0
 - [Go](https://golang.org/doc/install) >= 1.24
 
 ## Building The Provider
