@@ -5,22 +5,22 @@ import (
 	"fmt"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
-	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-var _ datasource.DataSource = &deviceSecretsDataSource{}
+var _ ephemeral.EphemeralResource = &deviceSecretsEphemeralResource{}
 
-func NewDeviceSecretsDataSource() datasource.DataSource {
-	return &deviceSecretsDataSource{}
+func NewDeviceSecretsEphemeralResource() ephemeral.EphemeralResource {
+	return &deviceSecretsEphemeralResource{}
 }
 
-type deviceSecretsDataSource struct {
+type deviceSecretsEphemeralResource struct {
 	client *client.Client
 }
 
-type deviceSecretsDataSourceModel struct {
+type deviceSecretsEphemeralResourceModel struct {
 	DeviceID               types.String `tfsdk:"device_id"`
 	UserBasedALBC          types.String `tfsdk:"user_based_albc"`
 	DeviceBasedALBC        types.String `tfsdk:"device_based_albc"`
@@ -29,13 +29,13 @@ type deviceSecretsDataSourceModel struct {
 	RecoveryLockPassword   types.String `tfsdk:"recovery_lock_password"`
 }
 
-func (d *deviceSecretsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+func (r *deviceSecretsEphemeralResource) Metadata(ctx context.Context, req ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_device_secrets"
 }
 
-func (d *deviceSecretsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (r *deviceSecretsEphemeralResource) Schema(ctx context.Context, req ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Fetch secrets for a specific device. Warning: These values are sensitive and will be stored in the Terraform state.",
+		MarkdownDescription: "Fetch secrets for a specific device as an ephemeral resource. These values are NOT stored in the Terraform state.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,
@@ -70,15 +70,15 @@ func (d *deviceSecretsDataSource) Schema(ctx context.Context, req datasource.Sch
 	}
 }
 
-func (d *deviceSecretsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (r *deviceSecretsEphemeralResource) Configure(ctx context.Context, req ephemeral.ConfigureRequest, resp *ephemeral.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
-	d.client = req.ProviderData.(*client.Client)
+	r.client = req.ProviderData.(*client.Client)
 }
 
-func (d *deviceSecretsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data deviceSecretsDataSourceModel
+func (r *deviceSecretsEphemeralResource) Open(ctx context.Context, req ephemeral.OpenRequest, resp *ephemeral.OpenResponse) {
+	var data deviceSecretsEphemeralResourceModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -88,7 +88,7 @@ func (d *deviceSecretsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	// ALBC
 	var albc client.DeviceSecretsALBC
-	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/bypasscode", deviceID), nil, &albc)
+	err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/bypasscode", deviceID), nil, &albc)
 	if err == nil {
 		data.UserBasedALBC = types.StringValue(albc.UserBasedALBC)
 		data.DeviceBasedALBC = types.StringValue(albc.DeviceBasedALBC)
@@ -96,24 +96,24 @@ func (d *deviceSecretsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	// FileVault
 	var fv client.DeviceSecretsFileVault
-	err = d.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/filevaultkey", deviceID), nil, &fv)
+	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/filevaultkey", deviceID), nil, &fv)
 	if err == nil {
 		data.FileVaultRecoveryKey = types.StringValue(fv.Key)
 	}
 
 	// Unlock Pin
 	var pin client.DeviceSecretsUnlockPin
-	err = d.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/unlockpin", deviceID), nil, &pin)
+	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/unlockpin", deviceID), nil, &pin)
 	if err == nil {
 		data.UnlockPin = types.StringValue(pin.Pin)
 	}
 
 	// Recovery Lock
 	var rl client.DeviceSecretsRecoveryLock
-	err = d.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/recoverypassword", deviceID), nil, &rl)
+	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/recoverypassword", deviceID), nil, &rl)
 	if err == nil {
 		data.RecoveryLockPassword = types.StringValue(rl.RecoveryPassword)
 	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Result.Set(ctx, &data)...)
 }
