@@ -19,7 +19,7 @@ output "key" {
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckOutputSet("key"),
+					resource.TestCheckResourceAttrSet("iru_ade_public_key.test", "public_key"),
 				),
 			},
 		},

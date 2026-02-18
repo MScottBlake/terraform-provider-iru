@@ -23,9 +23,7 @@ output "albc" {
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					// Ephemeral resources aren't checked exactly like normal ones in steps,
-					// but we can check if the output is set.
-					resource.TestCheckOutputSet("albc"),
+					resource.TestCheckResourceAttrSet("iru_device_secrets.test", "device_based_albc"),
 				),
 			},
 		},

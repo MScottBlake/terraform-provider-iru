@@ -21,7 +21,7 @@ output "profile" {
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckOutputSet("profile"),
+					resource.TestCheckResourceAttrSet("iru_blueprint_ota_profile.test", "profile_xml"),
 				),
 			},
 		},
