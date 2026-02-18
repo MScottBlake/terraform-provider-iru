@@ -1,5 +1,6 @@
 # Visit https://goreleaser.com for documentation on how to customize this
 # file.
+version: 2
 project_name: terraform-provider-iru
 
 before:
