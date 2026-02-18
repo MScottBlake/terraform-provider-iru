@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -41,18 +42,33 @@ func (f *parseProfileFunction) Run(ctx context.Context, req function.RunRequest,
 		return
 	}
 
+	result, err := parseProfileXML(xml)
+	if err != nil {
+		resp.Error = function.NewFuncError(fmt.Sprintf("Failed to parse profile: %s", err))
+		return
+	}
+
+	mapValue, diags := types.MapValueFrom(ctx, types.StringType, result)
+	if diags.HasError() {
+		return
+	}
+
+	resp.Error = resp.Result.Set(ctx, mapValue)
+}
+
+// parseProfileXML contains the core logic separated from the Terraform framework.
+// This allows for unit testing without provider initialization.
+func parseProfileXML(xml string) (map[string]string, error) {
 	// Simple mock implementation: Extract PayloadIdentifier and PayloadUUID
-	// In a real provider, we'd use a plist parser.
+	// In a real provider, we'd use "howett.net/plist" or similar.
+	if xml == "" {
+		return nil, fmt.Errorf("empty XML provided")
+	}
+
 	result := map[string]string{
 		"identifier": "extracted-id",
 		"uuid":       "extracted-uuid",
 	}
 
-	mapValue, diags := types.MapValueFrom(ctx, types.StringType, result)
-	if diags.HasError() {
-		// Error handling for MapValueFrom
-		return
-	}
-
-	resp.Error = resp.Result.Set(ctx, mapValue)
+	return result, nil
 }
