@@ -13,6 +13,11 @@ import (
 // http://github.com/hashicorp/terraform-plugin-docs
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
+// These variables are set by goreleaser at build time.
+var (
+	version string = "dev"
+)
+
 func main() {
 	var debug bool
 
@@ -24,7 +29,7 @@ func main() {
 		Debug:   debug,
 	}
 
-	err := providerserver.Serve(context.Background(), provider.New("0.1.0"), opts)
+	err := providerserver.Serve(context.Background(), provider.New(version), opts)
 
 	if err != nil {
 		log.Fatal(err.Error())
