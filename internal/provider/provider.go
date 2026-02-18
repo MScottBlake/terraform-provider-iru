@@ -5,7 +5,11 @@ import (
 	"os"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
+	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
+	"github.com/hashicorp/terraform-plugin-framework/function"
+	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -14,6 +18,10 @@ import (
 
 // Ensure IruProvider satisfies various provider interfaces.
 var _ provider.Provider = &IruProvider{}
+var _ provider.ProviderWithActions = &IruProvider{}
+var _ provider.ProviderWithFunctions = &IruProvider{}
+var _ provider.ProviderWithEphemeralResources = &IruProvider{}
+var _ provider.ProviderWithListResources = &IruProvider{}
 
 // IruProvider defines the provider implementation.
 type IruProvider struct {
@@ -111,7 +119,6 @@ func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewAuditEventsDataSource,
 		NewLicensingDataSource,
 		NewPrismAppsDataSource,
-		NewDeviceSecretsDataSource,
 		NewPrismCertificatesDataSource,
 		NewPrismLocalUsersDataSource,
 		NewPrismSystemExtensionsDataSource,
@@ -128,6 +135,52 @@ func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewThreatsDataSource,
 		NewBehavioralDetectionsDataSource,
 		NewSelfServiceCategoriesDataSource,
+	}
+}
+
+func (p *IruProvider) Actions(ctx context.Context) []func() action.Action {
+	return []func() action.Action{
+		NewDeviceRestartAction,
+		NewDeviceShutdownAction,
+		NewDeviceLockAction,
+		NewDeviceEraseAction,
+		NewDeviceBlankPushAction,
+		NewDeviceRenameAction,
+		NewDeviceEnableRemoteDesktopAction,
+		NewDeviceForceCheckInAction,
+		NewDeviceClearPasscodeAction,
+		NewDeviceBypassActivationLockAction,
+		NewDeviceUnlockAccountAction,
+		NewDeviceReinstallAgentAction,
+		NewDeviceDailyCheckinAction,
+	}
+}
+
+func (p *IruProvider) Functions(ctx context.Context) []func() function.Function {
+	return []func() function.Function{
+		NewParseProfileFunction,
+	}
+}
+
+func (p *IruProvider) EphemeralResources(ctx context.Context) []func() ephemeral.EphemeralResource {
+	return []func() ephemeral.EphemeralResource{
+		NewDeviceSecretsEphemeralResource,
+		NewADEPublicKeyEphemeralResource,
+		NewBlueprintOTAProfileEphemeralResource,
+	}
+}
+
+func (p *IruProvider) ListResources(ctx context.Context) []func() list.ListResource {
+	return []func() list.ListResource{
+		NewDeviceListResource,
+		NewTagListResource,
+		NewUserListResource,
+		NewBlueprintListResource,
+		NewCustomAppListResource,
+		NewCustomProfileListResource,
+		NewCustomScriptListResource,
+		NewInHouseAppListResource,
+		NewADEIntegrationListResource,
 	}
 }
 
