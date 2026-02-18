@@ -11,7 +11,7 @@ import (
 
 // Run the docs generation tool, check its documentation for more information on how it works:
 // http://github.com/hashicorp/terraform-plugin-docs
-//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-name iru
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 func main() {
 	var debug bool

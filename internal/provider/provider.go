@@ -44,7 +44,7 @@ func (p *IruProvider) Schema(ctx context.Context, req provider.SchemaRequest, re
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"api_url": schema.StringAttribute{
-				MarkdownDescription: "The API URL for Iru (e.g., https://<subdomain>.api.kandji.io/api/v1).",
+				MarkdownDescription: "The API URL for Iru.",
 				Optional:            true,
 			},
 			"api_token": schema.StringAttribute{
@@ -174,7 +174,6 @@ func (p *IruProvider) ListResources(ctx context.Context) []func() list.ListResou
 	return []func() list.ListResource{
 		NewDeviceListResource,
 		NewTagListResource,
-		NewUserListResource,
 		NewBlueprintListResource,
 		NewCustomAppListResource,
 		NewCustomProfileListResource,

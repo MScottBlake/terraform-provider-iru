@@ -1,0 +1,27 @@
+# This file defines a query to find existing devices for bulk import.
+# Run 'terraform query' to see the results.
+
+list "iru_device" "macbooks" {
+  provider         = iru
+  include_resource = true
+  limit            = 500
+
+  # Example of provider-specific query configuration if supported
+  # config {
+  #   platform = "macOS"
+  # }
+}
+
+# After running 'terraform query', you can use the results in an import block:
+/*
+import {
+  for_each = list.iru_device.macbooks
+  to       = iru_device.managed[each.key]
+  id       = each.value.id
+}
+
+resource "iru_device" "managed" {
+  for_each = list.iru_device.macbooks
+  # attributes will be populated by terraform query -generate-config-out
+}
+*/

@@ -13,7 +13,7 @@ description: |-
 
 ```terraform
 provider "iru" {
-  api_url   = "https://<your-subdomain>.api.kandji.io/api/v1"
+  api_url   = "https://your-subdomain.api.kandji.io/api/v1"
   api_token = "your-api-token"
 }
 ```
@@ -24,4 +24,4 @@ provider "iru" {
 ### Optional
 
 - `api_token` (String, Sensitive) The API Token for authentication.
-- `api_url` (String) The API URL for Iru (e.g., https://<subdomain>.api.kandji.io/api/v1).
+- `api_url` (String) The API URL for Iru.
