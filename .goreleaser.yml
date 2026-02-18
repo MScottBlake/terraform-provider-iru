@@ -56,4 +56,4 @@ signs:
       - "${artifact}"
 
 changelog:
-  skip: true
+  disable: true
