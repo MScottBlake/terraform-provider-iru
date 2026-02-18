@@ -20,9 +20,8 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache: true
-            - name: Import GPG key
-              uses: crazy-max/gpg-import-action@v6
-      
+      - name: Import GPG key
+        uses: crazy-max/gpg-import-action@v6
         id: import_gpg
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
