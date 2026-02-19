@@ -16,7 +16,15 @@ func TestAccCustomProfileResource(t *testing.T) {
 resource "iru_custom_profile" "test" {
   name         = "Acc Test Profile"
   active       = true
-  profile_file = "<?xml version="1.0" encoding="UTF-8"?><plist version="1.0"><dict><key>PayloadDisplayName</key><string>Test</string></dict></plist>"
+  profile_file = <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+	<key>PayloadDisplayName</key>
+	<string>Test</string>
+</dict>
+</plist>
+EOF
   runs_on_mac  = true
 }
 `,
