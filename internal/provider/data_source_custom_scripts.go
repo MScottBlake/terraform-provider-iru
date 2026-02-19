@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,6 +22,10 @@ type customScriptsDataSource struct {
 }
 
 type customScriptsDataSourceModel struct {
+	ID      types.String                  `tfsdk:"id"`
+	Limit   types.Int64                   `tfsdk:"limit"`
+	Offset  types.Int64                   `tfsdk:"offset"`
+	Name    types.String                  `tfsdk:"name"`
 	Scripts []customScriptDataSourceModel `tfsdk:"scripts"`
 }
 
@@ -43,6 +48,21 @@ func (d *customScriptsDataSource) Schema(ctx context.Context, req datasource.Sch
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all custom scripts in the Kandji instance.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
+			"name": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by name.",
+			},
 			"scripts": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -105,18 +125,36 @@ func (d *customScriptsDataSource) Configure(ctx context.Context, req datasource.
 
 func (d *customScriptsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data customScriptsDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var allScripts []client.CustomScript
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		if !data.Name.IsNull() {
+			params.Add("name", data.Name.ValueString())
+		}
+
+		path := "/library/custom-scripts?" + params.Encode()
 		type listScriptsResponse struct {
 			Results []client.CustomScript `json:"results"`
 		}
 		var listResp listScriptsResponse
-		
-		path := fmt.Sprintf("/library/custom-scripts?limit=%d&offset=%d", limit, offset)
+
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom scripts, got error: %s", err))
@@ -124,13 +162,20 @@ func (d *customScriptsDataSource) Read(ctx context.Context, req datasource.ReadR
 		}
 
 		allScripts = append(allScripts, listResp.Results...)
-		
+
+		if !data.Limit.IsNull() && len(allScripts) >= limit {
+			allScripts = allScripts[:limit]
+			break
+		}
+
 		if len(listResp.Results) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Results)
 	}
 
+	data.ID = types.StringValue("custom_scripts")
+	data.Scripts = make([]customScriptDataSourceModel, 0, len(allScripts))
 	for _, script := range allScripts {
 		data.Scripts = append(data.Scripts, customScriptDataSourceModel{
 			ID:                 types.StringValue(script.ID),

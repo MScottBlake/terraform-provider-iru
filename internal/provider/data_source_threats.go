@@ -22,6 +22,8 @@ type threatsDataSource struct {
 
 type threatsDataSourceModel struct {
 	ID      types.String  `tfsdk:"id"`
+	Limit   types.Int64   `tfsdk:"limit"`
+	Offset  types.Int64   `tfsdk:"offset"`
 	Results []threatModel `tfsdk:"results"`
 }
 
@@ -47,6 +49,14 @@ func (d *threatsDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
 			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
@@ -77,17 +87,27 @@ func (d *threatsDataSource) Configure(ctx context.Context, req datasource.Config
 
 func (d *threatsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data threatsDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var all []client.Threat
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
 		type threatResponse struct {
 			Results []client.Threat `json:"results"`
 		}
 		var listResp threatResponse
-		
+
 		path := fmt.Sprintf("/at-risk/threats?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
@@ -96,10 +116,16 @@ func (d *threatsDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		}
 
 		all = append(all, listResp.Results...)
+
+		if !data.Limit.IsNull() && len(all) >= limit {
+			all = all[:limit]
+			break
+		}
+
 		if len(listResp.Results) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Results)
 	}
 
 	for _, item := range all {

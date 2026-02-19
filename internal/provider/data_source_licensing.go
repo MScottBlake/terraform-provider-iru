@@ -22,13 +22,13 @@ type licensingDataSource struct {
 
 type licensingDataSourceModel struct {
 	ID                     types.String `tfsdk:"id"`
-	ComputersCount         types.Int64 `tfsdk:"computers_count"`
-	IOSCount               types.Int64 `tfsdk:"ios_count"`
-	IPadOSCount            types.Int64 `tfsdk:"ipados_count"`
-	MacOSCount             types.Int64 `tfsdk:"macos_count"`
-	TVOSCount              types.Int64 `tfsdk:"tvos_count"`
-	MaxDevices             types.Int64 `tfsdk:"max_devices"`
-	TenantOverLicenseLimit types.Bool  `tfsdk:"tenant_over_license_limit"`
+	ComputersCount         types.Int64  `tfsdk:"computers_count"`
+	IOSCount               types.Int64  `tfsdk:"ios_count"`
+	IPadOSCount            types.Int64  `tfsdk:"ipados_count"`
+	MacOSCount             types.Int64  `tfsdk:"macos_count"`
+	TVOSCount              types.Int64  `tfsdk:"tvos_count"`
+	MaxDevices             types.Int64  `tfsdk:"max_devices"`
+	TenantOverLicenseLimit types.Bool   `tfsdk:"tenant_over_license_limit"`
 }
 
 func (d *licensingDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {

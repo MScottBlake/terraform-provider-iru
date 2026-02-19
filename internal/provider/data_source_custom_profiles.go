@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,6 +22,10 @@ type customProfilesDataSource struct {
 }
 
 type customProfilesDataSourceModel struct {
+	ID       types.String                   `tfsdk:"id"`
+	Limit    types.Int64                    `tfsdk:"limit"`
+	Offset   types.Int64                    `tfsdk:"offset"`
+	Name     types.String                   `tfsdk:"name"`
 	Profiles []customProfileDataSourceModel `tfsdk:"profiles"`
 }
 
@@ -44,6 +49,21 @@ func (d *customProfilesDataSource) Schema(ctx context.Context, req datasource.Sc
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all custom profiles in the Kandji instance.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
+			"name": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by name.",
+			},
 			"profiles": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -110,18 +130,36 @@ func (d *customProfilesDataSource) Configure(ctx context.Context, req datasource
 
 func (d *customProfilesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data customProfilesDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var allProfiles []client.CustomProfile
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		if !data.Name.IsNull() {
+			params.Add("name", data.Name.ValueString())
+		}
+
+		path := "/library/custom-profiles?" + params.Encode()
 		type listProfilesResponse struct {
 			Results []client.CustomProfile `json:"results"`
 		}
 		var listResp listProfilesResponse
-		
-		path := fmt.Sprintf("/library/custom-profiles?limit=%d&offset=%d", limit, offset)
+
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom profiles, got error: %s", err))
@@ -129,24 +167,31 @@ func (d *customProfilesDataSource) Read(ctx context.Context, req datasource.Read
 		}
 
 		allProfiles = append(allProfiles, listResp.Results...)
-		
+
+		if !data.Limit.IsNull() && len(allProfiles) >= limit {
+			allProfiles = allProfiles[:limit]
+			break
+		}
+
 		if len(listResp.Results) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Results)
 	}
 
-	for _, resp := range allProfiles {
+	data.ID = types.StringValue("custom_profiles")
+	data.Profiles = make([]customProfileDataSourceModel, 0, len(allProfiles))
+	for _, p := range allProfiles {
 		data.Profiles = append(data.Profiles, customProfileDataSourceModel{
-			ID:            types.StringValue(resp.ID),
-			Name:          types.StringValue(resp.Name),
-			Active:        types.BoolValue(resp.Active),
-			MDMIdentifier: types.StringValue(resp.MDMIdentifier),
-			RunsOnMac:     types.BoolValue(resp.RunsOnMac),
-			RunsOnIPhone:  types.BoolValue(resp.RunsOnIPhone),
-			RunsOnIPad:    types.BoolValue(resp.RunsOnIPad),
-			RunsOnTV:      types.BoolValue(resp.RunsOnTV),
-			RunsOnVision:  types.BoolValue(resp.RunsOnVision),
+			ID:            types.StringValue(p.ID),
+			Name:          types.StringValue(p.Name),
+			Active:        types.BoolValue(p.Active),
+			MDMIdentifier: types.StringValue(p.MDMIdentifier),
+			RunsOnMac:     types.BoolValue(p.RunsOnMac),
+			RunsOnIPhone:  types.BoolValue(p.RunsOnIPhone),
+			RunsOnIPad:    types.BoolValue(p.RunsOnIPad),
+			RunsOnTV:      types.BoolValue(p.RunsOnTV),
+			RunsOnVision:  types.BoolValue(p.RunsOnVision),
 		})
 	}
 

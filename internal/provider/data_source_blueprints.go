@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,7 +22,10 @@ type blueprintsDataSource struct {
 }
 
 type blueprintsDataSourceModel struct {
-	ID         types.String                 `tfsdk:"id"`
+	ID         types.String               `tfsdk:"id"`
+	Limit      types.Int64                `tfsdk:"limit"`
+	Offset     types.Int64                `tfsdk:"offset"`
+	Name       types.String               `tfsdk:"name"`
 	Blueprints []blueprintDataSourceModel `tfsdk:"blueprints"`
 }
 
@@ -44,6 +48,18 @@ func (d *blueprintsDataSource) Schema(ctx context.Context, req datasource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
+			"name": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by name.",
 			},
 			"blueprints": schema.ListNestedAttribute{
 				Computed: true,
@@ -99,20 +115,36 @@ func (d *blueprintsDataSource) Configure(ctx context.Context, req datasource.Con
 
 func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data blueprintsDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var allBlueprints []client.Blueprint
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
-		// Note: List Blueprints API might return {results: []} or just [].
-		// Postman shows {results: []}.
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		if !data.Name.IsNull() {
+			params.Add("name", data.Name.ValueString())
+		}
+
+		path := "/blueprints?" + params.Encode()
 		type listBlueprintsResponse struct {
 			Results []client.Blueprint `json:"results"`
 		}
 		var listResp listBlueprintsResponse
-		
-		path := fmt.Sprintf("/blueprints?limit=%d&offset=%d", limit, offset)
+
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read blueprints, got error: %s", err))
@@ -120,13 +152,20 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		}
 
 		allBlueprints = append(allBlueprints, listResp.Results...)
-		
+
+		if !data.Limit.IsNull() && len(allBlueprints) >= limit {
+			allBlueprints = allBlueprints[:limit]
+			break
+		}
+
 		if len(listResp.Results) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Results)
 	}
 
+	data.ID = types.StringValue("blueprints")
+	data.Blueprints = make([]blueprintDataSourceModel, 0, len(allBlueprints))
 	for _, blueprint := range allBlueprints {
 		data.Blueprints = append(data.Blueprints, blueprintDataSourceModel{
 			ID:             types.StringValue(blueprint.ID),
@@ -137,8 +176,6 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			EnrollmentCode: types.StringValue(blueprint.EnrollmentCode.Code),
 		})
 	}
-
-	data.ID = types.StringValue("blueprints")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

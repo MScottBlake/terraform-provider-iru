@@ -28,6 +28,7 @@ output "vulnerability_ids" {
 
 ### Read-Only
 
+- `id` (String) The ID of this resource.
 - `results` (Attributes List) (see [below for nested schema](#nestedatt--results))
 
 <a id="nestedatt--results"></a>

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,7 +22,12 @@ type usersDataSource struct {
 }
 
 type usersDataSourceModel struct {
-	Users []userDataSourceModel `tfsdk:"users"`
+	ID     types.String          `tfsdk:"id"`
+	Limit  types.Int64           `tfsdk:"limit"`
+	Offset types.Int64           `tfsdk:"offset"`
+	Name   types.String          `tfsdk:"name"`
+	Email  types.String          `tfsdk:"email"`
+	Users  []userDataSourceModel `tfsdk:"users"`
 }
 
 type userDataSourceModel struct {
@@ -39,6 +45,25 @@ func (d *usersDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all users in the Kandji instance.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
+			"name": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by name.",
+			},
+			"email": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by email.",
+			},
 			"users": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -85,18 +110,39 @@ func (d *usersDataSource) Configure(ctx context.Context, req datasource.Configur
 
 func (d *usersDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data usersDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var allUsers []client.User
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
 		type listUsersResponse struct {
 			Results []client.User `json:"results"`
 		}
 		var listResp listUsersResponse
-		
-		path := fmt.Sprintf("/users?limit=%d&offset=%d", limit, offset)
+
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		if !data.Name.IsNull() {
+			params.Add("name", data.Name.ValueString())
+		}
+		if !data.Email.IsNull() {
+			params.Add("email", data.Email.ValueString())
+		}
+
+		path := "/users?" + params.Encode()
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read users, got error: %s", err))
@@ -104,13 +150,20 @@ func (d *usersDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		}
 
 		allUsers = append(allUsers, listResp.Results...)
-		
+
+		if !data.Limit.IsNull() && len(allUsers) >= limit {
+			allUsers = allUsers[:limit]
+			break
+		}
+
 		if len(listResp.Results) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Results)
 	}
 
+	data.ID = types.StringValue("users")
+	data.Users = make([]userDataSourceModel, 0, len(allUsers))
 	for _, user := range allUsers {
 		data.Users = append(data.Users, userDataSourceModel{
 			ID:         types.StringValue(user.ID),
