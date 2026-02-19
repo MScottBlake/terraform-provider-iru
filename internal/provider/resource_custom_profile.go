@@ -155,7 +155,7 @@ func (r *customProfileResource) Create(ctx context.Context, req resource.CreateR
 	fileContent := []byte(data.ProfileFile.ValueString())
 	
 	var profileResponse client.CustomProfile
-	err := r.client.DoMultipartRequest(ctx, "POST", "/library/custom-profiles", fields, "file", "profile.mobileconfig", bytes.NewReader(fileContent), &profileResponse)
+	err := r.client.DoMultipartRequest(ctx, "POST", "/api/v1/library/custom-profiles", fields, "file", "profile.mobileconfig", bytes.NewReader(fileContent), &profileResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create custom profile, got error: %s", err))
 		return
@@ -191,7 +191,7 @@ func (r *customProfileResource) Read(ctx context.Context, req resource.ReadReque
 	}
 
 	var profileResponse client.CustomProfile
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-profiles/"+id, nil, &profileResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/custom-profiles/"+id, nil, &profileResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom profile, got error: %s", err))
 		return
@@ -230,7 +230,7 @@ func (r *customProfileResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	var profileResponse client.CustomProfile
-	err := r.client.DoMultipartRequest(ctx, "PATCH", "/library/custom-profiles/"+plan.ID.ValueString(), fields, "file", "profile.mobileconfig", fileReader, &profileResponse)
+	err := r.client.DoMultipartRequest(ctx, "PATCH", "/api/v1/library/custom-profiles/"+plan.ID.ValueString(), fields, "file", "profile.mobileconfig", fileReader, &profileResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update custom profile, got error: %s", err))
 		return
@@ -254,7 +254,7 @@ func (r *customProfileResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/library/custom-profiles/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/library/custom-profiles/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete custom profile, got error: %s", err))
 		return

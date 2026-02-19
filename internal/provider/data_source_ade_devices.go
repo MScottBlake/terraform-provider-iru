@@ -207,7 +207,7 @@ func (d *adeDevicesDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			params.Add("serial_number", data.SerialNumber.ValueString())
 		}
 
-		path := "/integrations/apple/ade/devices?" + params.Encode()
+		path := "/api/v1/integrations/apple/ade/devices?" + params.Encode()
 		
 		type adeDevicesResponse struct {
 			Results []client.ADEDevice `json:"results"`

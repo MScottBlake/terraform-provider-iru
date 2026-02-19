@@ -52,7 +52,7 @@ func (r *customScriptListResource) List(ctx context.Context, req list.ListReques
 	var response struct {
 		Results []client.CustomScript `json:"results"`
 	}
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-scripts", nil, &response)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/custom-scripts", nil, &response)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list custom scripts, got error: %v", err)),

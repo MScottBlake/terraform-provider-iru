@@ -114,7 +114,7 @@ func (d *prismFileVaultDataSource) Read(ctx context.Context, req datasource.Read
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/filevault?" + params.Encode()
+		path := "/api/v1/prism/filevault?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismFileVault `json:"data"`
 		}

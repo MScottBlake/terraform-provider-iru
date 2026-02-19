@@ -52,7 +52,7 @@ func (r *blueprintListResource) List(ctx context.Context, req list.ListRequest, 
 	var response struct {
 		Results []client.Blueprint `json:"results"`
 	}
-	err := r.client.DoRequest(ctx, "GET", "/blueprints", nil, &response)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/blueprints", nil, &response)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list blueprints, got error: %v", err)),

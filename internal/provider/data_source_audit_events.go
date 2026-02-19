@@ -130,7 +130,7 @@ func (d *auditEventsDataSource) Read(ctx context.Context, req datasource.ReadReq
 			params.Add("end_date", data.EndDate.ValueString())
 		}
 
-		path := "/audit/events?" + params.Encode()
+		path := "/api/v1/audit/events?" + params.Encode()
 
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {

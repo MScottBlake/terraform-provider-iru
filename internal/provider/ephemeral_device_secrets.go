@@ -88,7 +88,7 @@ func (r *deviceSecretsEphemeralResource) Open(ctx context.Context, req ephemeral
 
 	// ALBC
 	var albc client.DeviceSecretsALBC
-	err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/bypasscode", deviceID), nil, &albc)
+	err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/devices/%s/secrets/bypasscode", deviceID), nil, &albc)
 	if err == nil {
 		data.UserBasedALBC = types.StringValue(albc.UserBasedALBC)
 		data.DeviceBasedALBC = types.StringValue(albc.DeviceBasedALBC)
@@ -96,21 +96,21 @@ func (r *deviceSecretsEphemeralResource) Open(ctx context.Context, req ephemeral
 
 	// FileVault
 	var fv client.DeviceSecretsFileVault
-	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/filevaultkey", deviceID), nil, &fv)
+	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/devices/%s/secrets/filevaultkey", deviceID), nil, &fv)
 	if err == nil {
 		data.FileVaultRecoveryKey = types.StringValue(fv.Key)
 	}
 
 	// Unlock Pin
 	var pin client.DeviceSecretsUnlockPin
-	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/unlockpin", deviceID), nil, &pin)
+	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/devices/%s/secrets/unlockpin", deviceID), nil, &pin)
 	if err == nil {
 		data.UnlockPin = types.StringValue(pin.Pin)
 	}
 
 	// Recovery Lock
 	var rl client.DeviceSecretsRecoveryLock
-	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/secrets/recoverypassword", deviceID), nil, &rl)
+	err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/devices/%s/secrets/recoverypassword", deviceID), nil, &rl)
 	if err == nil {
 		data.RecoveryLockPassword = types.StringValue(rl.RecoveryPassword)
 	}

@@ -55,7 +55,7 @@ func (r *adeIntegrationListResource) List(ctx context.Context, req list.ListRequ
 	var response struct {
 		Results []client.ADEIntegration `json:"results"`
 	}
-	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/", nil, &response)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/integrations/apple/ade/", nil, &response)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list ADE integrations, got error: %v", err)),

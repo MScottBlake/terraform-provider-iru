@@ -110,7 +110,7 @@ func (d *prismLocalUsersDataSource) Read(ctx context.Context, req datasource.Rea
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/local_users?" + params.Encode()
+		path := "/api/v1/prism/local_users?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

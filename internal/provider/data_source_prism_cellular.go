@@ -104,7 +104,7 @@ func (d *prismCellularDataSource) Read(ctx context.Context, req datasource.ReadR
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/cellular?" + params.Encode()
+		path := "/api/v1/prism/cellular?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

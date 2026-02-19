@@ -64,7 +64,7 @@ func (d *licensingDataSource) Read(ctx context.Context, req datasource.ReadReque
 	var data licensingDataSourceModel
 
 	var licenseResp client.Licensing
-	err := d.client.DoRequest(ctx, "GET", "/settings/licensing", nil, &licenseResp)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/settings/licensing", nil, &licenseResp)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read licensing, got error: %s", err))
 		return

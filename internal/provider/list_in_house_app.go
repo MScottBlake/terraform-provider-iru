@@ -52,7 +52,7 @@ func (r *inHouseAppListResource) List(ctx context.Context, req list.ListRequest,
 	var response struct {
 		Results []client.InHouseApp `json:"results"`
 	}
-	err := r.client.DoRequest(ctx, "GET", "/library/ipa-apps", nil, &response)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/ipa-apps", nil, &response)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list in-house apps, got error: %v", err)),

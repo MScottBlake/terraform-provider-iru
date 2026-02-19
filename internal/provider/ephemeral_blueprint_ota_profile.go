@@ -59,7 +59,7 @@ func (r *blueprintOTAProfileEphemeralResource) Open(ctx context.Context, req eph
 		return
 	}
 
-	reqRaw, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/blueprints/%s/ota-enrollment-profile", r.client.APIURL, data.BlueprintID.ValueString()), nil)
+	reqRaw, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/v1/blueprints/%s/ota-enrollment-profile", r.client.APIURL, data.BlueprintID.ValueString()), nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create request, got error: %s", err))
 		return

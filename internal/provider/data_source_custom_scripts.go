@@ -149,7 +149,7 @@ func (d *customScriptsDataSource) Read(ctx context.Context, req datasource.ReadR
 			params.Add("name", data.Name.ValueString())
 		}
 
-		path := "/library/custom-scripts?" + params.Encode()
+		path := "/api/v1/library/custom-scripts?" + params.Encode()
 		type listScriptsResponse struct {
 			Results []client.CustomScript `json:"results"`
 		}

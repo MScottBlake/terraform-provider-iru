@@ -177,7 +177,7 @@ func (r *adeDeviceResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	var deviceResponse client.ADEDevice
-	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/devices/"+id, nil, &deviceResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/integrations/apple/ade/devices/"+id, nil, &deviceResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read ADE device, got error: %s", err))
 		return
@@ -214,7 +214,7 @@ func (r *adeDeviceResource) Update(ctx context.Context, req resource.UpdateReque
 	
 	if len(updateRequest) > 0 {
 		var deviceResponse client.ADEDevice
-		err := r.client.DoRequest(ctx, "PATCH", "/integrations/apple/ade/devices/"+plan.ID.ValueString(), updateRequest, &deviceResponse)
+		err := r.client.DoRequest(ctx, "PATCH", "/api/v1/integrations/apple/ade/devices/"+plan.ID.ValueString(), updateRequest, &deviceResponse)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update ADE device, got error: %s", err))
 			return

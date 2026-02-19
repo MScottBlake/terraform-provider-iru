@@ -98,7 +98,7 @@ func (d *prismActivationLockDataSource) Read(ctx context.Context, req datasource
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/activation_lock?" + params.Encode()
+		path := "/api/v1/prism/activation_lock?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

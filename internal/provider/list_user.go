@@ -61,7 +61,7 @@ func (r *userListResource) List(ctx context.Context, req list.ListRequest, resp 
 	var response struct {
 		Results []client.User `json:"results"`
 	}
-	err := r.client.DoRequest(ctx, "GET", "/users", nil, &response)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/users", nil, &response)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list users, got error: %v", err)),

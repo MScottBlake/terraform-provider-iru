@@ -52,7 +52,7 @@ func (r *customProfileListResource) List(ctx context.Context, req list.ListReque
 	var response struct {
 		Results []client.CustomProfile `json:"results"`
 	}
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-profiles", nil, &response)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/custom-profiles", nil, &response)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list custom profiles, got error: %v", err)),

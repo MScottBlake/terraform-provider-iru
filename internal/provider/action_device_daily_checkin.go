@@ -53,7 +53,7 @@ func (a *deviceDailyCheckinAction) Invoke(ctx context.Context, req action.Invoke
 		return
 	}
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/dailycheckin", data.DeviceID.ValueString()), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/dailycheckin", data.DeviceID.ValueString()), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke daily checkin, got error: %s", err))
 		return

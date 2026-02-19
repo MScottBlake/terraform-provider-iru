@@ -61,7 +61,7 @@ func (a *deviceUnlockAccountAction) Invoke(ctx context.Context, req action.Invok
 	payload := map[string]string{
 		"UserName": data.UserName.ValueString(),
 	}
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/unlockaccount", data.DeviceID.ValueString()), payload, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/unlockaccount", data.DeviceID.ValueString()), payload, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke unlock account, got error: %s", err))
 		return

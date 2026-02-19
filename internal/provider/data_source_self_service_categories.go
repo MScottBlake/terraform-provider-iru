@@ -78,7 +78,7 @@ func (d *selfServiceCategoriesDataSource) Read(ctx context.Context, req datasour
 		Name string `json:"name"`
 	}
 
-	err := d.client.DoRequest(ctx, "GET", "/library/self-service/categories", nil, &listResp)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/library/self-service/categories", nil, &listResp)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read self service categories, got error: %s", err))
 		return

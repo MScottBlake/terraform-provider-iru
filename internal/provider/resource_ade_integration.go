@@ -177,7 +177,7 @@ func (r *adeIntegrationResource) Create(ctx context.Context, req resource.Create
 	fileContent := []byte(data.MDMServerTokenFile.ValueString())
 	
 	var adeResponse client.ADEIntegration
-	err := r.client.DoMultipartRequest(ctx, "POST", "/integrations/apple/ade/", fields, "file", "token.p7m", bytes.NewReader(fileContent), &adeResponse)
+	err := r.client.DoMultipartRequest(ctx, "POST", "/api/v1/integrations/apple/ade/", fields, "file", "token.p7m", bytes.NewReader(fileContent), &adeResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create ADE integration, got error: %s", err))
 		return
@@ -213,7 +213,7 @@ func (r *adeIntegrationResource) Read(ctx context.Context, req resource.ReadRequ
 	}
 
 	var adeResponse client.ADEIntegration
-	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/"+id, nil, &adeResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/integrations/apple/ade/"+id, nil, &adeResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read ADE integration, got error: %s", err))
 		return
@@ -254,7 +254,7 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 		fileContent := []byte(plan.MDMServerTokenFile.ValueString())
 		
 		var adeResponse client.ADEIntegration
-		err := r.client.DoMultipartRequest(ctx, "POST", "/integrations/apple/ade/"+plan.ID.ValueString()+"/renew", fields, "file", "token.p7m", bytes.NewReader(fileContent), &adeResponse)
+		err := r.client.DoMultipartRequest(ctx, "POST", "/api/v1/integrations/apple/ade/"+plan.ID.ValueString()+"/renew", fields, "file", "token.p7m", bytes.NewReader(fileContent), &adeResponse)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to renew ADE integration, got error: %s", err))
 			return
@@ -275,7 +275,7 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 		}
 		
 		var adeResponse client.ADEIntegration
-		err := r.client.DoRequest(ctx, "PATCH", "/integrations/apple/ade/"+plan.ID.ValueString(), updateRequest, &adeResponse)
+		err := r.client.DoRequest(ctx, "PATCH", "/api/v1/integrations/apple/ade/"+plan.ID.ValueString(), updateRequest, &adeResponse)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update ADE integration, got error: %s", err))
 			return
@@ -300,7 +300,7 @@ func (r *adeIntegrationResource) Delete(ctx context.Context, req resource.Delete
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/integrations/apple/ade/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/integrations/apple/ade/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete ADE integration, got error: %s", err))
 		return

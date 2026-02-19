@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"os"
+	"strings"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/action"
@@ -81,6 +82,8 @@ func (p *IruProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		return
 	}
 
+	apiURL = normalizeAPIURL(apiURL)
+
 	if apiToken == "" {
 		resp.Diagnostics.AddError("Missing API Token", "The 'api_token' provider attribute or IRU_API_TOKEN environment variable must be set.")
 		return
@@ -99,6 +102,7 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewBlueprintResource,
 		NewBlueprintRoutingResource,
+		NewBlueprintLibraryItemResource,
 		NewADEIntegrationResource,
 		NewADEDeviceResource,
 		NewDeviceResource,
@@ -107,25 +111,37 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewCustomProfileResource,
 		NewCustomAppResource,
 		NewInHouseAppResource,
+		NewPrismExportResource,
 	}
 }
 
 func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewDevicesDataSource,
+		NewDeviceDataSource,
 		NewADEDevicesDataSource,
 		NewADEDeviceDataSource,
 		NewADEIntegrationDevicesDataSource,
 		NewBlueprintsDataSource,
+		NewBlueprintDataSource,
+		NewBlueprintTemplatesDataSource,
 		NewBlueprintRoutingDataSource,
 		NewBlueprintRoutingActivityDataSource,
 		NewTagsDataSource,
 		NewCustomScriptsDataSource,
 		NewCustomProfilesDataSource,
 		NewUsersDataSource,
+		NewUserDataSource,
+		NewDeviceActivityDataSource,
+		NewDeviceCommandsDataSource,
+		NewPrismCountDataSource,
 		NewPrismFileVaultDataSource,
 		NewPrismAppFirewallDataSource,
 		NewVulnerabilitiesDataSource,
+		NewVulnerabilityDataSource,
+		NewVulnerabilityDetectionsDataSource,
+		NewVulnerabilityDevicesDataSource,
+		NewVulnerabilitySoftwareDataSource,
 		NewAuditEventsDataSource,
 		NewLicensingDataSource,
 		NewPrismAppsDataSource,
@@ -163,6 +179,16 @@ func (p *IruProvider) Actions(ctx context.Context) []func() action.Action {
 		NewDeviceUnlockAccountAction,
 		NewDeviceReinstallAgentAction,
 		NewDeviceDailyCheckinAction,
+		NewDeviceSetPersonalHotspotAction,
+		NewDeviceSetDataRoamingAction,
+		NewDeviceUpdateInventoryAction,
+		NewDeviceEnableLostModeAction,
+		NewDeviceDisableLostModeAction,
+		NewDevicePlayLostModeSoundAction,
+		NewDeviceUpdateLocationAction,
+		NewDeviceDeleteUserAction,
+		NewDeviceRefreshESIMAction,
+		NewDeviceRenewMDMProfileAction,
 	}
 }
 
@@ -200,4 +226,11 @@ func New(version string) func() provider.Provider {
 			version: version,
 		}
 	}
+}
+
+func normalizeAPIURL(apiURL string) string {
+	if !strings.Contains(apiURL, "://") {
+		return "https://" + apiURL
+	}
+	return apiURL
 }

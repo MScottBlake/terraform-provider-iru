@@ -147,7 +147,7 @@ func (r *customAppResource) Create(ctx context.Context, req resource.CreateReque
 
 	appRequest := r.mapToClient(&data)
 	var appResponse client.CustomApp
-	err := r.client.DoRequest(ctx, "POST", "/library/custom-apps", appRequest, &appResponse)
+	err := r.client.DoRequest(ctx, "POST", "/api/v1/library/custom-apps", appRequest, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create custom app, got error: %s", err))
 		return
@@ -181,7 +181,7 @@ func (r *customAppResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	var appResponse client.CustomApp
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-apps/"+id, nil, &appResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/custom-apps/"+id, nil, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom app, got error: %s", err))
 		return
@@ -201,7 +201,7 @@ func (r *customAppResource) Update(ctx context.Context, req resource.UpdateReque
 
 	appRequest := r.mapToClient(&data)
 	var appResponse client.CustomApp
-	err := r.client.DoRequest(ctx, "PATCH", "/library/custom-apps/"+data.ID.ValueString(), appRequest, &appResponse)
+	err := r.client.DoRequest(ctx, "PATCH", "/api/v1/library/custom-apps/"+data.ID.ValueString(), appRequest, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update custom app, got error: %s", err))
 		return
@@ -223,7 +223,7 @@ func (r *customAppResource) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/library/custom-apps/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/library/custom-apps/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete custom app, got error: %s", err))
 		return

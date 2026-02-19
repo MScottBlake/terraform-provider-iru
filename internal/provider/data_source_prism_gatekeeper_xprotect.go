@@ -106,7 +106,7 @@ func (d *prismGatekeeperXProtectDataSource) Read(ctx context.Context, req dataso
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/gatekeeper_and_xprotect?" + params.Encode()
+		path := "/api/v1/prism/gatekeeper_and_xprotect?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

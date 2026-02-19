@@ -22,15 +22,15 @@ type usersDataSource struct {
 }
 
 type usersDataSourceModel struct {
-	ID     types.String          `tfsdk:"id"`
-	Limit  types.Int64           `tfsdk:"limit"`
-	Offset types.Int64           `tfsdk:"offset"`
-	Name   types.String          `tfsdk:"name"`
-	Email  types.String          `tfsdk:"email"`
-	Users  []userDataSourceModel `tfsdk:"users"`
+	ID     types.String        `tfsdk:"id"`
+	Limit  types.Int64         `tfsdk:"limit"`
+	Offset types.Int64         `tfsdk:"offset"`
+	Name   types.String        `tfsdk:"name"`
+	Email  types.String        `tfsdk:"email"`
+	Users  []userListItemModel `tfsdk:"users"`
 }
 
-type userDataSourceModel struct {
+type userListItemModel struct {
 	ID         types.String `tfsdk:"id"`
 	Name       types.String `tfsdk:"name"`
 	Email      types.String `tfsdk:"email"`
@@ -142,7 +142,7 @@ func (d *usersDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 			params.Add("email", data.Email.ValueString())
 		}
 
-		path := "/users?" + params.Encode()
+		path := "/api/v1/users?" + params.Encode()
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read users, got error: %s", err))
@@ -163,9 +163,9 @@ func (d *usersDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	data.ID = types.StringValue("users")
-	data.Users = make([]userDataSourceModel, 0, len(allUsers))
+	data.Users = make([]userListItemModel, 0, len(allUsers))
 	for _, user := range allUsers {
-		data.Users = append(data.Users, userDataSourceModel{
+		data.Users = append(data.Users, userListItemModel{
 			ID:         types.StringValue(user.ID),
 			Name:       types.StringValue(user.Name),
 			Email:      types.StringValue(user.Email),

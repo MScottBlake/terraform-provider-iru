@@ -124,7 +124,7 @@ func (d *tagsDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 			params.Add("name", data.Name.ValueString())
 		}
 
-		path := "/tags?" + params.Encode()
+		path := "/api/v1/tags?" + params.Encode()
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tags, got error: %s", err))
