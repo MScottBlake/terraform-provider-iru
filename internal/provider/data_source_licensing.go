@@ -21,13 +21,14 @@ type licensingDataSource struct {
 }
 
 type licensingDataSourceModel struct {
-	ComputersCount         types.Int64 `tfsdk:"computers_count"`
-	IOSCount               types.Int64 `tfsdk:"ios_count"`
-	IPadOSCount            types.Int64 `tfsdk:"ipados_count"`
-	MacOSCount             types.Int64 `tfsdk:"macos_count"`
-	TVOSCount              types.Int64 `tfsdk:"tvos_count"`
-	MaxDevices             types.Int64 `tfsdk:"max_devices"`
-	TenantOverLicenseLimit types.Bool  `tfsdk:"tenant_over_license_limit"`
+	ID                     types.String `tfsdk:"id"`
+	ComputersCount         types.Int64  `tfsdk:"computers_count"`
+	IOSCount               types.Int64  `tfsdk:"ios_count"`
+	IPadOSCount            types.Int64  `tfsdk:"ipados_count"`
+	MacOSCount             types.Int64  `tfsdk:"macos_count"`
+	TVOSCount              types.Int64  `tfsdk:"tvos_count"`
+	MaxDevices             types.Int64  `tfsdk:"max_devices"`
+	TenantOverLicenseLimit types.Bool   `tfsdk:"tenant_over_license_limit"`
 }
 
 func (d *licensingDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -38,6 +39,9 @@ func (d *licensingDataSource) Schema(ctx context.Context, req datasource.SchemaR
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Get tenant licensing and utilization information.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"computers_count":           schema.Int64Attribute{Computed: true},
 			"ios_count":                 schema.Int64Attribute{Computed: true},
 			"ipados_count":              schema.Int64Attribute{Computed: true},
@@ -73,6 +77,7 @@ func (d *licensingDataSource) Read(ctx context.Context, req datasource.ReadReque
 	data.TVOSCount = types.Int64Value(int64(licenseResp.Counts.TVOSCount))
 	data.MaxDevices = types.Int64Value(int64(licenseResp.Limits.MaxDevices))
 	data.TenantOverLicenseLimit = types.BoolValue(licenseResp.TenantOverLicenseLimit)
+	data.ID = types.StringValue("licensing")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

@@ -13,6 +13,7 @@ func TestAccPrismAppsDataSource(t *testing.T) {
 			{
 				Config: `data "iru_prism_apps" "test" {}`,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.iru_prism_apps.test", "id"),
 					resource.TestCheckResourceAttrSet("data.iru_prism_apps.test", "results.#"),
 				),
 			},

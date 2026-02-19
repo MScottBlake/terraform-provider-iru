@@ -7,6 +7,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -15,6 +16,7 @@ import (
 
 var _ resource.Resource = &tagResource{}
 var _ resource.ResourceWithImportState = &tagResource{}
+var _ resource.ResourceWithIdentity = &tagResource{}
 
 func NewTagResource() resource.Resource {
 	return &tagResource{}
@@ -29,6 +31,10 @@ type tagResourceModel struct {
 	Name types.String `tfsdk:"name"`
 }
 
+type tagResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
+}
+
 func (r *tagResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_tag"
 }
@@ -39,7 +45,7 @@ func (r *tagResource) Schema(ctx context.Context, req resource.SchemaRequest, re
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the Tag.",
+				Description: "The unique identifier for the Tag.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -47,6 +53,17 @@ func (r *tagResource) Schema(ctx context.Context, req resource.SchemaRequest, re
 			"name": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The name of the Tag.",
+			},
+		},
+	}
+}
+
+func (r *tagResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description:       "The unique identifier for the Tag.",
 			},
 		},
 	}
@@ -92,6 +109,11 @@ func (r *tagResource) Create(ctx context.Context, req resource.CreateRequest, re
 	data.Name = types.StringValue(tagResponse.Name)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := tagResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *tagResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -102,13 +124,19 @@ func (r *tagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		return
 	}
 
+	var identity tagResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var tagResponse client.Tag
-	// Note: API for single tag might be GET /tags/{id} or maybe it's only in list?
-	// Docs showed GET /tags (list) but "Get Tag" usually exists.
-	// Postman showed "Get Tags" (plural) which seemed like List.
-	// Actually Postman showed "Get Tags" as a single request. 
-	// I'll check the URL in Postman for "Get Tags".
-	err := r.client.DoRequest(ctx, "GET", "/tags/"+data.ID.ValueString(), nil, &tagResponse)
+	err := r.client.DoRequest(ctx, "GET", "/tags/"+id, nil, &tagResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tag, got error: %s", err))
 		return
@@ -117,6 +145,7 @@ func (r *tagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	data.Name = types.StringValue(tagResponse.Name)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *tagResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -141,6 +170,11 @@ func (r *tagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	data.Name = types.StringValue(tagResponse.Name)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := tagResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *tagResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

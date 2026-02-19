@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,7 +22,16 @@ type devicesDataSource struct {
 }
 
 type devicesDataSourceModel struct {
-	Devices []deviceModel `tfsdk:"devices"`
+	ID           types.String  `tfsdk:"id"`
+	Limit        types.Int64   `tfsdk:"limit"`
+	Offset       types.Int64   `tfsdk:"offset"`
+	SerialNumber types.String  `tfsdk:"serial_number"`
+	AssetTag     types.String  `tfsdk:"asset_tag"`
+	DeviceName   types.String  `tfsdk:"device_name"`
+	Platform     types.String  `tfsdk:"platform"`
+	UserID       types.String  `tfsdk:"user_id"`
+	BlueprintID  types.String  `tfsdk:"blueprint_id"`
+	Devices      []deviceModel `tfsdk:"devices"`
 }
 
 type deviceModel struct {
@@ -42,6 +52,41 @@ func (d *devicesDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all devices in the Kandji instance.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
+			"serial_number": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by serial number.",
+			},
+			"asset_tag": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by asset tag.",
+			},
+			"device_name": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by device name.",
+			},
+			"platform": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by platform.",
+			},
+			"user_id": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by user ID.",
+			},
+			"blueprint_id": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by blueprint ID.",
+			},
 			"devices": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -100,28 +145,46 @@ func (d *devicesDataSource) Configure(ctx context.Context, req datasource.Config
 
 func (d *devicesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data devicesDataSourceModel
-
-	// Determine pagination or simply fetch all.
-	// Kandji API usually paginates. If no params, it might return first page or all?
-	// The docs mention `limit` and `offset`. Default limit might be 100?
-	// I'll assume standard pagination logic or fetch all loop.
-	// For simplicity in this iteration, I'll fetch the default page.
-	// But "full featured" implies handling pagination.
-	// I'll implement a loop to fetch all devices.
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var allDevices []client.Device
 	offset := 0
-	limit := 300 // Max limit often supported
-	
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
+	limit := 300
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
-		// API docs usually return array for list, or object with results.
-		// If it returns array, headers have pagination info?
-		// I'll check if API returns array or object.
-		// "GET /devices" -> Returns list of devices.
-		// I'll assume array.
-		// Pagination parameters: `limit`, `offset`.
-		
-		path := fmt.Sprintf("/devices/?limit=%d&offset=%d", limit, offset)
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		if !data.SerialNumber.IsNull() {
+			params.Add("serial_number", data.SerialNumber.ValueString())
+		}
+		if !data.AssetTag.IsNull() {
+			params.Add("asset_tag", data.AssetTag.ValueString())
+		}
+		if !data.DeviceName.IsNull() {
+			params.Add("device_name", data.DeviceName.ValueString())
+		}
+		if !data.Platform.IsNull() {
+			params.Add("platform", data.Platform.ValueString())
+		}
+		if !data.UserID.IsNull() {
+			params.Add("user_id", data.UserID.ValueString())
+		}
+		if !data.BlueprintID.IsNull() {
+			params.Add("blueprint_id", data.BlueprintID.ValueString())
+		}
+
+		path := "/devices?" + params.Encode()
 		var pageResponse []client.Device
 		err := d.client.DoRequest(ctx, "GET", path, nil, &pageResponse)
 		if err != nil {
@@ -130,13 +193,20 @@ func (d *devicesDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		}
 
 		allDevices = append(allDevices, pageResponse...)
-		
+
+		if !data.Limit.IsNull() && len(allDevices) >= limit {
+			allDevices = allDevices[:limit]
+			break
+		}
+
 		if len(pageResponse) < limit {
 			break
 		}
-		offset += limit
+		offset += len(pageResponse)
 	}
 
+	data.ID = types.StringValue("devices")
+	data.Devices = make([]deviceModel, 0, len(allDevices))
 	for _, device := range allDevices {
 		data.Devices = append(data.Devices, deviceModel{
 			ID:           types.StringValue(device.ID),

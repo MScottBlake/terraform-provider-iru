@@ -8,6 +8,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -16,6 +17,7 @@ import (
 
 var _ resource.Resource = &adeIntegrationResource{}
 var _ resource.ResourceWithImportState = &adeIntegrationResource{}
+var _ resource.ResourceWithIdentity = &adeIntegrationResource{}
 
 func NewADEIntegrationResource() resource.Resource {
 	return &adeIntegrationResource{}
@@ -26,11 +28,24 @@ type adeIntegrationResource struct {
 }
 
 type adeIntegrationResourceModel struct {
-	ID                 types.String `tfsdk:"id"`
-	BlueprintID        types.String `tfsdk:"blueprint_id"`
-	Phone              types.String `tfsdk:"phone"`
-	Email              types.String `tfsdk:"email"`
-	MDMServerTokenFile types.String `tfsdk:"mdm_server_token_file"`
+	ID                  types.String `tfsdk:"id"`
+	BlueprintID         types.String `tfsdk:"blueprint_id"`
+	Phone               types.String `tfsdk:"phone"`
+	Email               types.String `tfsdk:"email"`
+	MDMServerTokenFile  types.String `tfsdk:"mdm_server_token_file"`
+	AccessTokenExpiry   types.String `tfsdk:"access_token_expiry"`
+	ServerName          types.String `tfsdk:"server_name"`
+	ServerUUID          types.String `tfsdk:"server_uuid"`
+	AdminID             types.String `tfsdk:"admin_id"`
+	OrgName             types.String `tfsdk:"org_name"`
+	STokenFileName      types.String `tfsdk:"stoken_file_name"`
+	DaysLeft            types.Int64  `tfsdk:"days_left"`
+	Status              types.String `tfsdk:"status"`
+	UseBlueprintRouting types.Bool   `tfsdk:"use_blueprint_routing"`
+}
+
+type adeIntegrationResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
 }
 
 func (r *adeIntegrationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -43,14 +58,14 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the ADE Integration.",
+				Description:         "The unique identifier for the ADE Integration.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"blueprint_id": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The UUID of the default blueprint to associate with the integration.",
+				Optional:            true,
+				MarkdownDescription: "The UUID of the default blueprint to associate with the integration. Required if use_blueprint_routing is false.",
 			},
 			"phone": schema.StringAttribute{
 				Required:            true,
@@ -64,6 +79,54 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 				Required:            true,
 				Sensitive:           true,
 				MarkdownDescription: "The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.",
+			},
+			"use_blueprint_routing": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Whether to use Blueprint Routing for this integration. If true, blueprint_id should be null.",
+			},
+			"access_token_expiry": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The access token expiry date.",
+			},
+			"server_name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The name of the ADE server.",
+			},
+			"server_uuid": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The UUID of the ADE server.",
+			},
+			"admin_id": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The admin ID of the ADE integration.",
+			},
+			"org_name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The organization name.",
+			},
+			"stoken_file_name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The name of the server token file.",
+			},
+			"days_left": schema.Int64Attribute{
+				Computed:            true,
+				MarkdownDescription: "Number of days left before expiry.",
+			},
+			"status": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The status of the ADE integration.",
+			},
+		},
+	}
+}
+
+func (r *adeIntegrationResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description: "The unique identifier for the ADE Integration.",
 			},
 		},
 	}
@@ -95,9 +158,20 @@ func (r *adeIntegrationResource) Create(ctx context.Context, req resource.Create
 	}
 
 	fields := map[string]string{
-		"blueprint_id": data.BlueprintID.ValueString(),
-		"phone":        data.Phone.ValueString(),
-		"email":        data.Email.ValueString(),
+		"phone": data.Phone.ValueString(),
+		"email": data.Email.ValueString(),
+	}
+
+	if !data.BlueprintID.IsNull() {
+		fields["blueprint_id"] = data.BlueprintID.ValueString()
+	}
+
+	if !data.UseBlueprintRouting.IsNull() {
+		if data.UseBlueprintRouting.ValueBool() {
+			fields["use_blueprint_routing"] = "true"
+		} else {
+			fields["use_blueprint_routing"] = "false"
+		}
 	}
 
 	fileContent := []byte(data.MDMServerTokenFile.ValueString())
@@ -109,15 +183,14 @@ func (r *adeIntegrationResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	data.ID = types.StringValue(adeResponse.ID)
-	// Response contains blueprint object, but we store blueprint_id
-	if adeResponse.Blueprint != nil {
-		data.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-	}
-	data.Phone = types.StringValue(adeResponse.Phone)
-	data.Email = types.StringValue(adeResponse.Email)
+	r.updateModelWithADEIntegration(&data, &adeResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := adeIntegrationResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *adeIntegrationResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -128,23 +201,28 @@ func (r *adeIntegrationResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
+	var identity adeIntegrationResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var adeResponse client.ADEIntegration
-	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/"+data.ID.ValueString(), nil, &adeResponse)
+	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/"+id, nil, &adeResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read ADE integration, got error: %s", err))
 		return
 	}
 
-	if adeResponse.Blueprint != nil {
-		data.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-	}
-	data.Phone = types.StringValue(adeResponse.Phone)
-	data.Email = types.StringValue(adeResponse.Email)
-	// MDMServerTokenFile is not returned by API, keep from state (handled by Terraform automatically if not set here?)
-	// Actually, if we don't set it, it might show as null if we overwrite `data` completely.
-	// But we are updating `data` fields. `data.MDMServerTokenFile` preserves previous value if we don't touch it.
+	r.updateModelWithADEIntegration(&data, &adeResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *adeIntegrationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -159,10 +237,20 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 	if !plan.MDMServerTokenFile.Equal(state.MDMServerTokenFile) {
 		// Token changed, use Renew endpoint
 		fields := map[string]string{
-			"blueprint_id": plan.BlueprintID.ValueString(),
-			"phone":        plan.Phone.ValueString(),
-			"email":        plan.Email.ValueString(),
+			"phone": plan.Phone.ValueString(),
+			"email": plan.Email.ValueString(),
 		}
+		if !plan.BlueprintID.IsNull() {
+			fields["blueprint_id"] = plan.BlueprintID.ValueString()
+		}
+		if !plan.UseBlueprintRouting.IsNull() {
+			if plan.UseBlueprintRouting.ValueBool() {
+				fields["use_blueprint_routing"] = "true"
+			} else {
+				fields["use_blueprint_routing"] = "false"
+			}
+		}
+
 		fileContent := []byte(plan.MDMServerTokenFile.ValueString())
 		
 		var adeResponse client.ADEIntegration
@@ -172,17 +260,18 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 			return
 		}
 		
-		if adeResponse.Blueprint != nil {
-			plan.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-		}
-		plan.Phone = types.StringValue(adeResponse.Phone)
-		plan.Email = types.StringValue(adeResponse.Email)
+		r.updateModelWithADEIntegration(&plan, &adeResponse)
 	} else {
 		// Normal update
 		updateRequest := client.ADEIntegration{
-			BlueprintID: plan.BlueprintID.ValueString(),
-			Phone:       plan.Phone.ValueString(),
-			Email:       plan.Email.ValueString(),
+			Phone: plan.Phone.ValueString(),
+			Email: plan.Email.ValueString(),
+		}
+		if !plan.BlueprintID.IsNull() {
+			updateRequest.BlueprintID = plan.BlueprintID.ValueString()
+		}
+		if !plan.UseBlueprintRouting.IsNull() {
+			updateRequest.UseBlueprintRouting = plan.UseBlueprintRouting.ValueBool()
 		}
 		
 		var adeResponse client.ADEIntegration
@@ -192,14 +281,15 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 			return
 		}
 
-		if adeResponse.Blueprint != nil {
-			plan.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-		}
-		plan.Phone = types.StringValue(adeResponse.Phone)
-		plan.Email = types.StringValue(adeResponse.Email)
+		r.updateModelWithADEIntegration(&plan, &adeResponse)
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	identity := adeIntegrationResourceIdentityModel{
+		ID: plan.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *adeIntegrationResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -219,4 +309,32 @@ func (r *adeIntegrationResource) Delete(ctx context.Context, req resource.Delete
 
 func (r *adeIntegrationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+func (r *adeIntegrationResource) updateModelWithADEIntegration(data *adeIntegrationResourceModel, adeResponse *client.ADEIntegration) {
+	data.ID = types.StringValue(adeResponse.ID)
+	if adeResponse.Blueprint != nil {
+		data.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
+	}
+
+	phone := adeResponse.Phone
+	if phone == "" {
+		phone = adeResponse.Defaults.Phone
+	}
+	email := adeResponse.Email
+	if email == "" {
+		email = adeResponse.Defaults.Email
+	}
+
+	data.Phone = types.StringValue(phone)
+	data.Email = types.StringValue(email)
+	data.AccessTokenExpiry = types.StringValue(adeResponse.AccessTokenExpiry)
+	data.ServerName = types.StringValue(adeResponse.ServerName)
+	data.ServerUUID = types.StringValue(adeResponse.ServerUUID)
+	data.AdminID = types.StringValue(adeResponse.AdminID)
+	data.OrgName = types.StringValue(adeResponse.OrgName)
+	data.STokenFileName = types.StringValue(adeResponse.STokenFileName)
+	data.DaysLeft = types.Int64Value(int64(adeResponse.DaysLeft))
+	data.Status = types.StringValue(adeResponse.Status)
+	data.UseBlueprintRouting = types.BoolValue(adeResponse.UseBlueprintRouting)
 }

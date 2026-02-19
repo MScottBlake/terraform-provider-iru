@@ -21,6 +21,8 @@ type behavioralDetectionsDataSource struct {
 }
 
 type behavioralDetectionsDataSourceModel struct {
+	ID      types.String               `tfsdk:"id"`
+	Page    types.Int64                `tfsdk:"page"`
 	Results []behavioralDetectionModel `tfsdk:"results"`
 }
 
@@ -43,6 +45,13 @@ func (d *behavioralDetectionsDataSource) Schema(ctx context.Context, req datasou
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List behavioral detections.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"page": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Page number to fetch.",
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -71,19 +80,25 @@ func (d *behavioralDetectionsDataSource) Configure(ctx context.Context, req data
 
 func (d *behavioralDetectionsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data behavioralDetectionsDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var all []client.BehavioralDetection
-	// Behavioral detections usually uses page/size
 	page := 1
-	
+	if !data.Page.IsNull() {
+		page = int(data.Page.ValueInt64())
+	}
+
 	for {
 		type bdResponse struct {
 			Results []client.BehavioralDetection `json:"results"`
 			Next    string                       `json:"next"`
 		}
 		var listResp bdResponse
-		
-		path := fmt.Sprintf("/at-risk/behavioral-detections/?page=%d", page)
+
+		path := fmt.Sprintf("/at-risk/behavioral-detections?page=%d", page)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read behavioral detections, got error: %s", err))
@@ -91,13 +106,22 @@ func (d *behavioralDetectionsDataSource) Read(ctx context.Context, req datasourc
 		}
 
 		all = append(all, listResp.Results...)
+
+		if !data.Page.IsNull() {
+			break
+		}
+
 		if listResp.Next == "" || len(listResp.Results) == 0 {
 			break
 		}
 		page++
-		if page > 10 { break } // Safety
+		if page > 10 {
+			break
+		} // Safety
 	}
 
+	data.ID = types.StringValue("behavioral_detections")
+	data.Results = make([]behavioralDetectionModel, 0, len(all))
 	for _, item := range all {
 		data.Results = append(data.Results, behavioralDetectionModel{
 			ID:             types.StringValue(item.ID),

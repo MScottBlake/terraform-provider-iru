@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,6 +22,9 @@ type prismCertificatesDataSource struct {
 }
 
 type prismCertificatesDataSourceModel struct {
+	ID      types.String            `tfsdk:"id"`
+	Limit   types.Int64             `tfsdk:"limit"`
+	Offset  types.Int64             `tfsdk:"offset"`
 	Results []prismCertificateModel `tfsdk:"results"`
 }
 
@@ -40,6 +44,17 @@ func (d *prismCertificatesDataSource) Schema(ctx context.Context, req datasource
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List certificates from Prism.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -65,18 +80,32 @@ func (d *prismCertificatesDataSource) Configure(ctx context.Context, req datasou
 
 func (d *prismCertificatesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data prismCertificatesDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var all []client.PrismEntry
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		path := "/prism/certificates?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}
 		var listResp prismResponse
-		
-		path := fmt.Sprintf("/prism/certificates/?limit=%d&offset=%d", limit, offset)
+
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism certificates, got error: %s", err))
@@ -84,13 +113,20 @@ func (d *prismCertificatesDataSource) Read(ctx context.Context, req datasource.R
 		}
 
 		all = append(all, listResp.Data...)
-		
+
+		if !data.Limit.IsNull() && len(all) >= limit {
+			all = all[:limit]
+			break
+		}
+
 		if len(listResp.Data) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Data)
 	}
 
+	data.ID = types.StringValue("prism_certificates")
+	data.Results = make([]prismCertificateModel, 0, len(all))
 	for _, item := range all {
 		commonName, _ := item["common_name"].(string)
 		identityCert, _ := item["identity_certificate"].(bool)

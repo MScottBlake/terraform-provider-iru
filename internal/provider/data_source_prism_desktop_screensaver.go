@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,15 +22,18 @@ type prismDesktopScreensaverDataSource struct {
 }
 
 type prismDesktopScreensaverDataSourceModel struct {
+	ID      types.String                   `tfsdk:"id"`
+	Limit   types.Int64                    `tfsdk:"limit"`
+	Offset  types.Int64                    `tfsdk:"offset"`
 	Results []prismDesktopScreensaverModel `tfsdk:"results"`
 }
 
 type prismDesktopScreensaverModel struct {
-	DeviceID     types.String `tfsdk:"device_id"`
-	DeviceName   types.String `tfsdk:"device_name"`
-	SerialNumber types.String `tfsdk:"serial_number"`
-	HostName     types.String `tfsdk:"host_name"`
-	OSVersion    types.String `tfsdk:"os_version"`
+	DeviceID      types.String `tfsdk:"device_id"`
+	DeviceName    types.String `tfsdk:"device_name"`
+	SerialNumber  types.String `tfsdk:"serial_number"`
+	HostName      types.String `tfsdk:"host_name"`
+	OSVersion     types.String `tfsdk:"os_version"`
 	MarketingName types.String `tfsdk:"marketing_name"`
 }
 
@@ -41,15 +45,26 @@ func (d *prismDesktopScreensaverDataSource) Schema(ctx context.Context, req data
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List desktop and screensaver information from Prism.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Maximum number of results to return.",
+			},
+			"offset": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "Number of results to skip.",
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"device_id":     schema.StringAttribute{Computed: true},
-						"device_name":   schema.StringAttribute{Computed: true},
-						"serial_number": schema.StringAttribute{Computed: true},
-						"host_name":     schema.StringAttribute{Computed: true},
-						"os_version":    schema.StringAttribute{Computed: true},
+						"device_id":      schema.StringAttribute{Computed: true},
+						"device_name":    schema.StringAttribute{Computed: true},
+						"serial_number":  schema.StringAttribute{Computed: true},
+						"host_name":      schema.StringAttribute{Computed: true},
+						"os_version":     schema.StringAttribute{Computed: true},
 						"marketing_name": schema.StringAttribute{Computed: true},
 					},
 				},
@@ -67,18 +82,32 @@ func (d *prismDesktopScreensaverDataSource) Configure(ctx context.Context, req d
 
 func (d *prismDesktopScreensaverDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data prismDesktopScreensaverDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var all []client.PrismEntry
 	offset := 0
+	if !data.Offset.IsNull() {
+		offset = int(data.Offset.ValueInt64())
+	}
 	limit := 300
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
+		params.Add("offset", fmt.Sprintf("%d", offset))
+
+		path := "/prism/desktop_screensaver?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}
 		var listResp prismResponse
-		
-		path := fmt.Sprintf("/prism/desktop_screensaver/?limit=%d&offset=%d", limit, offset)
+
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism desktop_screensaver, got error: %s", err))
@@ -86,19 +115,27 @@ func (d *prismDesktopScreensaverDataSource) Read(ctx context.Context, req dataso
 		}
 
 		all = append(all, listResp.Data...)
+
+		if !data.Limit.IsNull() && len(all) >= limit {
+			all = all[:limit]
+			break
+		}
+
 		if len(listResp.Data) < limit {
 			break
 		}
-		offset += limit
+		offset += len(listResp.Data)
 	}
 
+	data.ID = types.StringValue("prism_desktop_screensaver")
+	data.Results = make([]prismDesktopScreensaverModel, 0, len(all))
 	for _, item := range all {
 		data.Results = append(data.Results, prismDesktopScreensaverModel{
-			DeviceID:     types.StringValue(fmt.Sprintf("%v", item["device_id"])),
-			DeviceName:   types.StringValue(fmt.Sprintf("%v", item["device__name"])),
-			SerialNumber: types.StringValue(fmt.Sprintf("%v", item["serial_number"])),
-			HostName:     types.StringValue(fmt.Sprintf("%v", item["host_name"])),
-			OSVersion:    types.StringValue(fmt.Sprintf("%v", item["os_version"])),
+			DeviceID:      types.StringValue(fmt.Sprintf("%v", item["device_id"])),
+			DeviceName:    types.StringValue(fmt.Sprintf("%v", item["device__name"])),
+			SerialNumber:  types.StringValue(fmt.Sprintf("%v", item["serial_number"])),
+			HostName:      types.StringValue(fmt.Sprintf("%v", item["host_name"])),
+			OSVersion:     types.StringValue(fmt.Sprintf("%v", item["os_version"])),
 			MarketingName: types.StringValue(fmt.Sprintf("%v", item["marketing_name"])),
 		})
 	}

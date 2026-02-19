@@ -7,16 +7,37 @@ type Blueprint struct {
 	Description    string `json:"description,omitempty"`
 	Icon           string `json:"icon,omitempty"`
 	Color          string `json:"color,omitempty"`
-	EnrollmentCode string `json:"enrollment_code,omitempty"`
+	Type           string `json:"type,omitempty"`
+	EnrollmentCode struct {
+		Code     string `json:"code"`
+		IsActive bool   `json:"is_active"`
+	} `json:"enrollment_code,omitempty"`
+	Source struct {
+		ID   string `json:"id,omitempty"`
+		Type string `json:"type,omitempty"`
+	} `json:"source,omitempty"`
 }
 
 // ADEIntegration represents a Kandji ADE Integration.
 type ADEIntegration struct {
-	ID          string     `json:"id,omitempty"`
-	BlueprintID string     `json:"blueprint_id,omitempty"` // Used for Update input
-	Phone       string     `json:"phone"`
-	Email       string     `json:"email"`
-	Blueprint   *Blueprint `json:"blueprint,omitempty"` // From response
+	ID                  string     `json:"id,omitempty"`
+	BlueprintID         string     `json:"blueprint_id,omitempty"` // Used for Update input
+	Phone               string     `json:"phone,omitempty"`        // Top level in some cases?
+	Email               string     `json:"email,omitempty"`        // Top level in some cases?
+	Blueprint           *Blueprint `json:"blueprint,omitempty"`    // From response
+	AccessTokenExpiry   string     `json:"access_token_expiry,omitempty"`
+	ServerName          string     `json:"server_name,omitempty"`
+	ServerUUID          string     `json:"server_uuid,omitempty"`
+	AdminID             string     `json:"admin_id,omitempty"`
+	OrgName             string     `json:"org_name,omitempty"`
+	STokenFileName      string     `json:"stoken_file_name,omitempty"`
+	DaysLeft            int        `json:"days_left,omitempty"`
+	Status              string     `json:"status,omitempty"`
+	UseBlueprintRouting bool       `json:"use_blueprint_routing,omitempty"`
+	Defaults            struct {
+		Phone string `json:"phone"`
+		Email string `json:"email"`
+	} `json:"defaults,omitempty"`
 }
 
 // Device represents a Kandji Device.
@@ -230,4 +251,48 @@ type DeviceSecretsRecoveryLock struct {
 type BlueprintLibraryItem struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+// ADEDevice represents a Kandji ADE Device.
+type ADEDevice struct {
+	ID            string `json:"device_id,omitempty"`
+	SerialNumber  string `json:"serial_number"`
+	Model         string `json:"model"`
+	Description   string `json:"description"`
+	AssetTag      string `json:"asset_tag"`
+	Color         string `json:"color"`
+	BlueprintID   string `json:"blueprint_id"`
+	UserID        string `json:"user_id"`
+	DEPAccount    string `json:"dep_account"`
+	DeviceFamily  string `json:"device_family"`
+	OS            string `json:"os"`
+	ProfileStatus string `json:"profile_status"`
+	IsEnrolled    bool   `json:"is_enrolled"`
+	UseBlueprintRouting bool `json:"use_blueprint_routing"`
+}
+
+// BlueprintRouting represents the Blueprint Routing settings.
+type BlueprintRouting struct {
+	EnrollmentCode struct {
+		Code     string `json:"code"`
+		IsActive bool   `json:"is_active"`
+	} `json:"enrollment_code"`
+}
+
+// BlueprintRoutingActivity represents an activity event for Blueprint Routing.
+type BlueprintRoutingActivity struct {
+	ID           int                    `json:"id"`
+	ActivityTime string                 `json:"activity_time"`
+	ActivityType string                 `json:"activity_type"`
+	User         map[string]interface{} `json:"user,omitempty"`
+	DeviceID     string                 `json:"device_id,omitempty"`
+	Details      map[string]interface{} `json:"details"`
+}
+
+// BlueprintRoutingActivityList represents a list of activity events for Blueprint Routing.
+type BlueprintRoutingActivityList struct {
+	Count    int                        `json:"count"`
+	Next     string                     `json:"next"`
+	Previous string                     `json:"previous"`
+	Results  []BlueprintRoutingActivity `json:"results"`
 }

@@ -3,12 +3,12 @@
 page_title: "iru_device List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  
+  Lists Kandji Device resources.
 ---
 
 # iru_device (List Resource)
 
-
+Lists Kandji Device resources.
 
 ## Example Usage
 

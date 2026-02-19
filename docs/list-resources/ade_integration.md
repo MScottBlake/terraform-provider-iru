@@ -3,12 +3,12 @@
 page_title: "iru_ade_integration List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  
+  Lists Kandji ADE Integrations.
 ---
 
 # iru_ade_integration (List Resource)
 
-
+Lists Kandji ADE Integrations.
 
 ## Example Usage
 

@@ -7,6 +7,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -15,6 +16,7 @@ import (
 
 var _ resource.Resource = &customAppResource{}
 var _ resource.ResourceWithImportState = &customAppResource{}
+var _ resource.ResourceWithIdentity = &customAppResource{}
 
 func NewCustomAppResource() resource.Resource {
 	return &customAppResource{}
@@ -41,6 +43,10 @@ type customAppResourceModel struct {
 	Restart                types.Bool   `tfsdk:"restart"`
 }
 
+type customAppResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
+}
+
 func (r *customAppResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_custom_app"
 }
@@ -51,7 +57,7 @@ func (r *customAppResource) Schema(ctx context.Context, req resource.SchemaReque
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the Custom App.",
+				Description: "The unique identifier for the Custom App.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -114,6 +120,17 @@ func (r *customAppResource) Schema(ctx context.Context, req resource.SchemaReque
 	}
 }
 
+func (r *customAppResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description:       "The unique identifier for the Custom App.",
+			},
+		},
+	}
+}
+
 func (r *customAppResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -138,6 +155,11 @@ func (r *customAppResource) Create(ctx context.Context, req resource.CreateReque
 
 	r.mapFromClient(&data, &appResponse)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := customAppResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *customAppResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -147,8 +169,19 @@ func (r *customAppResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
+	var identity customAppResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var appResponse client.CustomApp
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-apps/"+data.ID.ValueString(), nil, &appResponse)
+	err := r.client.DoRequest(ctx, "GET", "/library/custom-apps/"+id, nil, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom app, got error: %s", err))
 		return
@@ -156,6 +189,7 @@ func (r *customAppResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	r.mapFromClient(&data, &appResponse)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *customAppResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -175,6 +209,11 @@ func (r *customAppResource) Update(ctx context.Context, req resource.UpdateReque
 
 	r.mapFromClient(&data, &appResponse)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := customAppResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *customAppResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

@@ -3,12 +3,12 @@
 page_title: "iru_custom_profile List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  
+  Lists Kandji Custom Profile resources.
 ---
 
 # iru_custom_profile (List Resource)
 
-
+Lists Kandji Custom Profile resources.
 
 ## Example Usage
 

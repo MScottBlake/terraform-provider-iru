@@ -3,12 +3,12 @@
 page_title: "iru_blueprint List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  
+  Lists Kandji Blueprint resources.
 ---
 
 # iru_blueprint (List Resource)
 
-
+Lists Kandji Blueprint resources.
 
 ## Example Usage
 

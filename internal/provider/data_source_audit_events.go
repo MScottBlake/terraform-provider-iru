@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,7 +22,12 @@ type auditEventsDataSource struct {
 }
 
 type auditEventsDataSourceModel struct {
-	Results []auditEventModel `tfsdk:"results"`
+	ID        types.String      `tfsdk:"id"`
+	Limit     types.Int64       `tfsdk:"limit"`
+	SortBy    types.String      `tfsdk:"sort_by"`
+	StartDate types.String      `tfsdk:"start_date"`
+	EndDate   types.String      `tfsdk:"end_date"`
+	Results   []auditEventModel `tfsdk:"results"`
 }
 
 type auditEventModel struct {
@@ -43,6 +49,25 @@ func (d *auditEventsDataSource) Schema(ctx context.Context, req datasource.Schem
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List audit log events.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
+			"limit": schema.Int64Attribute{
+				Optional:            true,
+				MarkdownDescription: "A max upper limit is set at 500 records returned per request.",
+			},
+			"sort_by": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Sort results by occurred_at, id either ascending (default behavior) or descending(-) order.",
+			},
+			"start_date": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by start date in datetime or year-month-day (2024-11-26) formats.",
+			},
+			"end_date": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "Filter by start date in datetime or year-month-day (2024-12-06) formats.",
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -71,23 +96,42 @@ func (d *auditEventsDataSource) Configure(ctx context.Context, req datasource.Co
 
 func (d *auditEventsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data auditEventsDataSourceModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	var all []client.AuditEvent
 	cursor := ""
 	limit := 500
-	
+	if !data.Limit.IsNull() {
+		limit = int(data.Limit.ValueInt64())
+	}
+
 	for {
 		type auditResponse struct {
 			Results []client.AuditEvent `json:"results"`
 			Next    string              `json:"next"`
 		}
 		var listResp auditResponse
-		
-		path := fmt.Sprintf("/audit/events?limit=%d", limit)
+
+		params := url.Values{}
+		params.Add("limit", fmt.Sprintf("%d", limit))
 		if cursor != "" {
-			path += "&cursor=" + cursor
+			params.Add("cursor", cursor)
 		}
-		
+		if !data.SortBy.IsNull() {
+			params.Add("sort_by", data.SortBy.ValueString())
+		}
+		if !data.StartDate.IsNull() {
+			params.Add("start_date", data.StartDate.ValueString())
+		}
+		if !data.EndDate.IsNull() {
+			params.Add("end_date", data.EndDate.ValueString())
+		}
+
+		path := "/audit/events?" + params.Encode()
+
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read audit events, got error: %s", err))
@@ -95,15 +139,30 @@ func (d *auditEventsDataSource) Read(ctx context.Context, req datasource.ReadReq
 		}
 
 		all = append(all, listResp.Results...)
-		
-		if listResp.Next == "" || len(listResp.Results) < limit {
+
+		// If user specified a limit and we reached it, stop.
+		if !data.Limit.IsNull() && len(all) >= limit {
+			all = all[:limit]
 			break
 		}
-		// Extract cursor from Next URL (simplified)
-		// Usually we'd parse the URL, but for now let's just stop if next is empty.
-		break // Avoid infinite loop if next is always present
+
+		if listResp.Next == "" || len(listResp.Results) == 0 {
+			break
+		}
+
+		// Extract cursor from Next URL
+		nextURL, err := url.Parse(listResp.Next)
+		if err != nil {
+			break
+		}
+		cursor = nextURL.Query().Get("cursor")
+		if cursor == "" {
+			break
+		}
 	}
 
+	data.ID = types.StringValue("audit_events")
+	data.Results = make([]auditEventModel, 0, len(all))
 	for _, item := range all {
 		data.Results = append(data.Results, auditEventModel{
 			ID:              types.StringValue(item.ID),

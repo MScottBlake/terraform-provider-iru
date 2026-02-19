@@ -30,7 +30,11 @@ resource "iru_blueprint" "example" {
 
 - `color` (String) The color of the Blueprint.
 - `description` (String) The description of the Blueprint.
+- `enrollment_code_active` (Boolean) Whether the enrollment code is active.
 - `icon` (String) The icon of the Blueprint.
+- `source_id` (String) The ID of the source blueprint to clone from.
+- `source_type` (String) The type of the source blueprint to clone from.
+- `type` (String) The type of the Blueprint. Options: classic, dynamic.
 
 ### Read-Only
 

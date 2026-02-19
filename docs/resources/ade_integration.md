@@ -26,11 +26,23 @@ resource "iru_ade_integration" "example" {
 
 ### Required
 
-- `blueprint_id` (String) The UUID of the default blueprint to associate with the integration.
 - `email` (String) An email address for the integration.
 - `mdm_server_token_file` (String, Sensitive) The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.
 - `phone` (String) A phone number for the integration.
 
+### Optional
+
+- `blueprint_id` (String) The UUID of the default blueprint to associate with the integration. Required if use_blueprint_routing is false.
+- `use_blueprint_routing` (Boolean) Whether to use Blueprint Routing for this integration. If true, blueprint_id should be null.
+
 ### Read-Only
 
+- `access_token_expiry` (String) The access token expiry date.
+- `admin_id` (String) The admin ID of the ADE integration.
+- `days_left` (Number) Number of days left before expiry.
 - `id` (String) The unique identifier for the ADE Integration.
+- `org_name` (String) The organization name.
+- `server_name` (String) The name of the ADE server.
+- `server_uuid` (String) The UUID of the ADE server.
+- `status` (String) The status of the ADE integration.
+- `stoken_file_name` (String) The name of the server token file.

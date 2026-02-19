@@ -7,6 +7,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -15,6 +16,7 @@ import (
 
 var _ resource.Resource = &deviceResource{}
 var _ resource.ResourceWithImportState = &deviceResource{}
+var _ resource.ResourceWithIdentity = &deviceResource{}
 
 func NewDeviceResource() resource.Resource {
 	return &deviceResource{}
@@ -37,6 +39,10 @@ type deviceResourceModel struct {
 	Platform     types.String `tfsdk:"platform"`
 }
 
+type deviceResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
+}
+
 func (r *deviceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_device"
 }
@@ -47,7 +53,7 @@ func (r *deviceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the Device.",
+				Description: "The unique identifier for the Device.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -91,6 +97,17 @@ func (r *deviceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 	}
 }
 
+func (r *deviceResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description:       "The unique identifier for the Device.",
+			},
+		},
+	}
+}
+
 func (r *deviceResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -123,8 +140,19 @@ func (r *deviceResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
+	var identity deviceResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var deviceResponse client.Device
-	err := r.client.DoRequest(ctx, "GET", "/devices/"+data.ID.ValueString(), nil, &deviceResponse)
+	err := r.client.DoRequest(ctx, "GET", "/devices/"+id, nil, &deviceResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read device, got error: %s", err))
 		return
@@ -140,6 +168,7 @@ func (r *deviceResource) Read(ctx context.Context, req resource.ReadRequest, res
 	data.Platform = types.StringValue(deviceResponse.Platform)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *deviceResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -161,12 +190,6 @@ func (r *deviceResource) Update(ctx context.Context, req resource.UpdateRequest,
 	if !plan.UserID.Equal(state.UserID) {
 		updateRequest["user_id"] = plan.UserID.ValueString()
 	}
-	// Note: Device Name might not be updateable via API. If user tries to change it, it might fail or be ignored.
-	// For now, I'll exclude it from update request unless I confirm it's supported.
-	// If the user changes it in Terraform, and API ignores it, Terraform will show diff again.
-	// So I should probably check if it's supported.
-	// Docs didn't list it. So I won't include it in map.
-	// But I should warn user? Or just let it be.
 	
 	if len(updateRequest) > 0 {
 		var deviceResponse client.Device
@@ -184,6 +207,11 @@ func (r *deviceResource) Update(ctx context.Context, req resource.UpdateRequest,
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	identity := deviceResourceIdentityModel{
+		ID: plan.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *deviceResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

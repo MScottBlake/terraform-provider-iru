@@ -26,6 +26,7 @@ output "tenant_status" {
 ### Read-Only
 
 - `computers_count` (Number)
+- `id` (String) The ID of this resource.
 - `ios_count` (Number)
 - `ipados_count` (Number)
 - `macos_count` (Number)

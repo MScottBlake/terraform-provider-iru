@@ -90,12 +90,17 @@ func (p *IruProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	resp.DataSourceData = c
 	resp.ResourceData = c
+	resp.ListResourceData = c
+	resp.ActionData = c
+	resp.EphemeralResourceData = c
 }
 
 func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewBlueprintResource,
+		NewBlueprintRoutingResource,
 		NewADEIntegrationResource,
+		NewADEDeviceResource,
 		NewDeviceResource,
 		NewTagResource,
 		NewCustomScriptResource,
@@ -108,7 +113,12 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewDevicesDataSource,
+		NewADEDevicesDataSource,
+		NewADEDeviceDataSource,
+		NewADEIntegrationDevicesDataSource,
 		NewBlueprintsDataSource,
+		NewBlueprintRoutingDataSource,
+		NewBlueprintRoutingActivityDataSource,
 		NewTagsDataSource,
 		NewCustomScriptsDataSource,
 		NewCustomProfilesDataSource,
@@ -173,6 +183,7 @@ func (p *IruProvider) EphemeralResources(ctx context.Context) []func() ephemeral
 func (p *IruProvider) ListResources(ctx context.Context) []func() list.ListResource {
 	return []func() list.ListResource{
 		NewDeviceListResource,
+		NewADEDeviceListResource,
 		NewTagListResource,
 		NewBlueprintListResource,
 		NewCustomAppListResource,

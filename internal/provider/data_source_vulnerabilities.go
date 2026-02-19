@@ -21,17 +21,18 @@ type vulnerabilitiesDataSource struct {
 }
 
 type vulnerabilitiesDataSourceModel struct {
+	ID      types.String         `tfsdk:"id"`
 	Results []vulnerabilityModel `tfsdk:"results"`
 }
 
 type vulnerabilityModel struct {
-	CVEID              types.String `tfsdk:"cve_id"`
-	Severity           types.String `tfsdk:"severity"`
+	CVEID              types.String  `tfsdk:"cve_id"`
+	Severity           types.String  `tfsdk:"severity"`
 	CVSSScore          types.Float64 `tfsdk:"cvss_score"`
-	FirstDetectionDate types.String `tfsdk:"first_detection_date"`
-	DeviceCount        types.Int64  `tfsdk:"device_count"`
-	Status             types.String `tfsdk:"status"`
-	Software           types.List   `tfsdk:"software"`
+	FirstDetectionDate types.String  `tfsdk:"first_detection_date"`
+	DeviceCount        types.Int64   `tfsdk:"device_count"`
+	Status             types.String  `tfsdk:"status"`
+	Software           types.List    `tfsdk:"software"`
 }
 
 func (d *vulnerabilitiesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -42,6 +43,9 @@ func (d *vulnerabilitiesDataSource) Schema(ctx context.Context, req datasource.S
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all vulnerabilities from Vulnerability Management.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -88,15 +92,15 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 	var all []client.Vulnerability
 	page := 1
 	size := 50
-	
+
 	for {
 		type vulnerabilityResponse struct {
 			Results []client.Vulnerability `json:"results"`
 			Next    string                 `json:"next"`
 		}
 		var listResp vulnerabilityResponse
-		
-		path := fmt.Sprintf("/vulnerability-management/vulnerabilities/?size=%d&page=%d", size, page)
+
+		path := fmt.Sprintf("/vulnerability-management/vulnerabilities?size=%d&page=%d", size, page)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read vulnerabilities, got error: %s", err))
@@ -104,7 +108,7 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 		}
 
 		all = append(all, listResp.Results...)
-		
+
 		if listResp.Next == "" || len(listResp.Results) < size {
 			break
 		}
@@ -114,7 +118,7 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 	for _, item := range all {
 		softwareList, diags := types.ListValueFrom(ctx, types.StringType, item.Software)
 		resp.Diagnostics.Append(diags...)
-		
+
 		data.Results = append(data.Results, vulnerabilityModel{
 			CVEID:              types.StringValue(item.CVEID),
 			Severity:           types.StringValue(item.Severity),
@@ -125,6 +129,8 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 			Software:           softwareList,
 		})
 	}
+
+	data.ID = types.StringValue("vulnerabilities")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
