@@ -99,6 +99,7 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewBlueprintResource,
 		NewBlueprintRoutingResource,
+		NewBlueprintLibraryItemResource,
 		NewADEIntegrationResource,
 		NewADEDeviceResource,
 		NewDeviceResource,
@@ -107,6 +108,7 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 		NewCustomProfileResource,
 		NewCustomAppResource,
 		NewInHouseAppResource,
+		NewPrismExportResource,
 	}
 }
 
@@ -117,12 +119,15 @@ func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewADEDeviceDataSource,
 		NewADEIntegrationDevicesDataSource,
 		NewBlueprintsDataSource,
+		NewBlueprintTemplatesDataSource,
 		NewBlueprintRoutingDataSource,
 		NewBlueprintRoutingActivityDataSource,
 		NewTagsDataSource,
 		NewCustomScriptsDataSource,
 		NewCustomProfilesDataSource,
 		NewUsersDataSource,
+		NewDeviceActivityDataSource,
+		NewDeviceCommandsDataSource,
 		NewPrismFileVaultDataSource,
 		NewPrismAppFirewallDataSource,
 		NewVulnerabilitiesDataSource,
@@ -163,6 +168,13 @@ func (p *IruProvider) Actions(ctx context.Context) []func() action.Action {
 		NewDeviceUnlockAccountAction,
 		NewDeviceReinstallAgentAction,
 		NewDeviceDailyCheckinAction,
+		NewDeviceEnableLostModeAction,
+		NewDeviceDisableLostModeAction,
+		NewDevicePlayLostModeSoundAction,
+		NewDeviceUpdateLocationAction,
+		NewDeviceDeleteUserAction,
+		NewDeviceRefreshESIMAction,
+		NewDeviceRenewMDMProfileAction,
 	}
 }
 

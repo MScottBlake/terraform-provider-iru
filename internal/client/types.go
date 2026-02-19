@@ -296,3 +296,67 @@ type BlueprintRoutingActivityList struct {
 	Previous string                     `json:"previous"`
 	Results  []BlueprintRoutingActivity `json:"results"`
 }
+
+// DeviceActivity represents a device activity event.
+type DeviceActivity struct {
+	ID               int                    `json:"id"`
+	CreatedAt        string                 `json:"created_at"`
+	ActionType       string                 `json:"action_type"`
+	Details          map[string]interface{} `json:"details"`
+	Computer         map[string]interface{} `json:"computer"`
+	Blueprint        map[string]interface{} `json:"blueprint,omitempty"`
+	User             map[string]interface{} `json:"user,omitempty"`
+	BlueprintRouting bool                   `json:"blueprint_routing"`
+}
+
+// DeviceActivityList represents a list of device activity events.
+type DeviceActivityList struct {
+	DeviceID string           `json:"device_id"`
+	Activity struct {
+		Count    int              `json:"count"`
+		Next     string           `json:"next"`
+		Previous string           `json:"previous"`
+		Results  []DeviceActivity `json:"results"`
+	} `json:"activity"`
+}
+
+// DeviceCommand represents an MDM command sent to a device.
+type DeviceCommand struct {
+	UUID          string                 `json:"uuid"`
+	CommandType   string                 `json:"command_type"`
+	Status        int                    `json:"status"`
+	DateRequested string                 `json:"date_requested"`
+	DateCompleted string                 `json:"date_completed"`
+	Metadata      map[string]interface{} `json:"metadata,omitempty"`
+}
+
+// DeviceCommandList represents a list of device commands.
+type DeviceCommandList struct {
+	DeviceID string `json:"device_id"`
+	Commands struct {
+		Count    int             `json:"count"`
+		Next     string          `json:"next"`
+		Previous string          `json:"previous"`
+		Results  []DeviceCommand `json:"results"`
+	} `json:"commands"`
+}
+
+// BlueprintTemplate represents a blueprint template.
+type BlueprintTemplate struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	// Add other fields if necessary based on API response
+}
+
+// PrismExport represents a Prism export job.
+type PrismExport struct {
+	ID        string `json:"id"`
+	Status    string `json:"status"` // success, processing, failed
+	Category  string `json:"category"`
+	SignedURL string `json:"signed_url"`
+}
+
+// PrismCount represents the count of items in a Prism category.
+type PrismCount struct {
+	Count int `json:"count"`
+}
