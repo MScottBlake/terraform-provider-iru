@@ -33,4 +33,12 @@ resource "iru_ade_integration" "example" {
 
 ### Read-Only
 
+- `access_token_expiry` (String) The access token expiry date.
+- `admin_id` (String) The admin ID of the ADE integration.
+- `days_left` (Number) Number of days left before expiry.
 - `id` (String) The unique identifier for the ADE Integration.
+- `org_name` (String) The organization name.
+- `server_name` (String) The name of the ADE server.
+- `server_uuid` (String) The UUID of the ADE server.
+- `status` (String) The status of the ADE integration.
+- `stoken_file_name` (String) The name of the server token file.

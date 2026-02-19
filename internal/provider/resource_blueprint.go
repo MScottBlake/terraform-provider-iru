@@ -27,12 +27,16 @@ type blueprintResource struct {
 }
 
 type blueprintResourceModel struct {
-	ID             types.String `tfsdk:"id"`
-	Name           types.String `tfsdk:"name"`
-	Description    types.String `tfsdk:"description"`
-	Icon           types.String `tfsdk:"icon"`
-	Color          types.String `tfsdk:"color"`
-	EnrollmentCode types.String `tfsdk:"enrollment_code"`
+	ID                   types.String `tfsdk:"id"`
+	Name                 types.String `tfsdk:"name"`
+	Description          types.String `tfsdk:"description"`
+	Icon                 types.String `tfsdk:"icon"`
+	Color                types.String `tfsdk:"color"`
+	Type                 types.String `tfsdk:"type"`
+	EnrollmentCode       types.String `tfsdk:"enrollment_code"`
+	EnrollmentCodeActive types.Bool   `tfsdk:"enrollment_code_active"`
+	SourceID             types.String `tfsdk:"source_id"`
+	SourceType           types.String `tfsdk:"source_type"`
 }
 
 type blueprintResourceIdentityModel struct {
@@ -49,7 +53,7 @@ func (r *blueprintResource) Schema(ctx context.Context, req resource.SchemaReque
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				Description: "The unique identifier for the Blueprint.",
+				Description:         "The unique identifier for the Blueprint.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -72,9 +76,36 @@ func (r *blueprintResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				MarkdownDescription: "The color of the Blueprint.",
 			},
+			"type": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "The type of the Blueprint. Options: classic, dynamic.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
 			"enrollment_code": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: "The enrollment code for the Blueprint.",
+			},
+			"enrollment_code_active": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Whether the enrollment code is active.",
+			},
+			"source_id": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "The ID of the source blueprint to clone from.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+			},
+			"source_type": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "The type of the source blueprint to clone from.",
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
 			},
 		},
 	}
@@ -117,10 +148,17 @@ func (r *blueprintResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	blueprintRequest := client.Blueprint{
-		Name:        data.Name.ValueString(),
-		Description: data.Description.ValueString(),
-		Icon:        data.Icon.ValueString(),
-		Color:       data.Color.ValueString(),
+		Name: data.Name.ValueString(),
+	}
+	blueprintRequest.EnrollmentCode.IsActive = data.EnrollmentCodeActive.ValueBool()
+	if !data.Type.IsNull() {
+		blueprintRequest.Type = data.Type.ValueString()
+	}
+	if !data.SourceID.IsNull() {
+		blueprintRequest.Source.ID = data.SourceID.ValueString()
+	}
+	if !data.SourceType.IsNull() {
+		blueprintRequest.Source.Type = data.SourceType.ValueString()
 	}
 
 	var blueprintResponse client.Blueprint
@@ -186,6 +224,7 @@ func (r *blueprintResource) Update(ctx context.Context, req resource.UpdateReque
 		Icon:        data.Icon.ValueString(),
 		Color:       data.Color.ValueString(),
 	}
+	blueprintRequest.EnrollmentCode.IsActive = data.EnrollmentCodeActive.ValueBool()
 
 	var blueprintResponse client.Blueprint
 	err := r.client.DoRequest(ctx, "PATCH", "/blueprints/"+data.ID.ValueString(), blueprintRequest, &blueprintResponse)
@@ -229,5 +268,7 @@ func (r *blueprintResource) updateModelWithBlueprint(data *blueprintResourceMode
 	data.Description = types.StringValue(blueprintResponse.Description)
 	data.Icon = types.StringValue(blueprintResponse.Icon)
 	data.Color = types.StringValue(blueprintResponse.Color)
+	data.Type = types.StringValue(blueprintResponse.Type)
 	data.EnrollmentCode = types.StringValue(blueprintResponse.EnrollmentCode.Code)
+	data.EnrollmentCodeActive = types.BoolValue(blueprintResponse.EnrollmentCode.IsActive)
 }

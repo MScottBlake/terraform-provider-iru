@@ -7,20 +7,33 @@ type Blueprint struct {
 	Description    string `json:"description,omitempty"`
 	Icon           string `json:"icon,omitempty"`
 	Color          string `json:"color,omitempty"`
+	Type           string `json:"type,omitempty"`
 	EnrollmentCode struct {
 		Code     string `json:"code"`
 		IsActive bool   `json:"is_active"`
 	} `json:"enrollment_code,omitempty"`
+	Source struct {
+		ID   string `json:"id,omitempty"`
+		Type string `json:"type,omitempty"`
+	} `json:"source,omitempty"`
 }
 
 // ADEIntegration represents a Kandji ADE Integration.
 type ADEIntegration struct {
-	ID          string     `json:"id,omitempty"`
-	BlueprintID string     `json:"blueprint_id,omitempty"` // Used for Update input
-	Phone       string     `json:"phone,omitempty"`        // Top level in some cases?
-	Email       string     `json:"email,omitempty"`        // Top level in some cases?
-	Blueprint   *Blueprint `json:"blueprint,omitempty"`    // From response
-	Defaults    struct {
+	ID                string     `json:"id,omitempty"`
+	BlueprintID       string     `json:"blueprint_id,omitempty"` // Used for Update input
+	Phone             string     `json:"phone,omitempty"`        // Top level in some cases?
+	Email             string     `json:"email,omitempty"`        // Top level in some cases?
+	Blueprint         *Blueprint `json:"blueprint,omitempty"`    // From response
+	AccessTokenExpiry string     `json:"access_token_expiry,omitempty"`
+	ServerName        string     `json:"server_name,omitempty"`
+	ServerUUID        string     `json:"server_uuid,omitempty"`
+	AdminID           string     `json:"admin_id,omitempty"`
+	OrgName           string     `json:"org_name,omitempty"`
+	STokenFileName    string     `json:"stoken_file_name,omitempty"`
+	DaysLeft          int        `json:"days_left,omitempty"`
+	Status            string     `json:"status,omitempty"`
+	Defaults          struct {
 		Phone string `json:"phone"`
 		Email string `json:"email"`
 	} `json:"defaults,omitempty"`
@@ -237,4 +250,21 @@ type DeviceSecretsRecoveryLock struct {
 type BlueprintLibraryItem struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+// ADEDevice represents a Kandji ADE Device.
+type ADEDevice struct {
+	ID            string `json:"device_id,omitempty"`
+	SerialNumber  string `json:"serial_number"`
+	Model         string `json:"model"`
+	Description   string `json:"description"`
+	AssetTag      string `json:"asset_tag"`
+	Color         string `json:"color"`
+	BlueprintID   string `json:"blueprint_id"`
+	UserID        string `json:"user_id"`
+	DEPAccount    string `json:"dep_account"`
+	DeviceFamily  string `json:"device_family"`
+	OS            string `json:"os"`
+	ProfileStatus string `json:"profile_status"`
+	IsEnrolled    bool   `json:"is_enrolled"`
 }

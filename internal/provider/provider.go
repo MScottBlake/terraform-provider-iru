@@ -99,6 +99,7 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewBlueprintResource,
 		NewADEIntegrationResource,
+		NewADEDeviceResource,
 		NewDeviceResource,
 		NewTagResource,
 		NewCustomScriptResource,
@@ -111,6 +112,9 @@ func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource 
 func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewDevicesDataSource,
+		NewADEDevicesDataSource,
+		NewADEDeviceDataSource,
+		NewADEIntegrationDevicesDataSource,
 		NewBlueprintsDataSource,
 		NewTagsDataSource,
 		NewCustomScriptsDataSource,
@@ -176,6 +180,7 @@ func (p *IruProvider) EphemeralResources(ctx context.Context) []func() ephemeral
 func (p *IruProvider) ListResources(ctx context.Context) []func() list.ListResource {
 	return []func() list.ListResource{
 		NewDeviceListResource,
+		NewADEDeviceListResource,
 		NewTagListResource,
 		NewBlueprintListResource,
 		NewCustomAppListResource,

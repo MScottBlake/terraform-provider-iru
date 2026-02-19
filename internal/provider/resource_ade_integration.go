@@ -28,11 +28,19 @@ type adeIntegrationResource struct {
 }
 
 type adeIntegrationResourceModel struct {
-	ID                 types.String `tfsdk:"id"`
-	BlueprintID        types.String `tfsdk:"blueprint_id"`
-	Phone              types.String `tfsdk:"phone"`
-	Email              types.String `tfsdk:"email"`
+	ID                types.String `tfsdk:"id"`
+	BlueprintID       types.String `tfsdk:"blueprint_id"`
+	Phone             types.String `tfsdk:"phone"`
+	Email             types.String `tfsdk:"email"`
 	MDMServerTokenFile types.String `tfsdk:"mdm_server_token_file"`
+	AccessTokenExpiry types.String `tfsdk:"access_token_expiry"`
+	ServerName        types.String `tfsdk:"server_name"`
+	ServerUUID        types.String `tfsdk:"server_uuid"`
+	AdminID           types.String `tfsdk:"admin_id"`
+	OrgName           types.String `tfsdk:"org_name"`
+	STokenFileName    types.String `tfsdk:"stoken_file_name"`
+	DaysLeft          types.Int64  `tfsdk:"days_left"`
+	Status            types.String `tfsdk:"status"`
 }
 
 type adeIntegrationResourceIdentityModel struct {
@@ -49,7 +57,7 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				Description: "The unique identifier for the ADE Integration.",
+				Description:         "The unique identifier for the ADE Integration.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -70,6 +78,38 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 				Required:            true,
 				Sensitive:           true,
 				MarkdownDescription: "The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.",
+			},
+			"access_token_expiry": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The access token expiry date.",
+			},
+			"server_name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The name of the ADE server.",
+			},
+			"server_uuid": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The UUID of the ADE server.",
+			},
+			"admin_id": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The admin ID of the ADE integration.",
+			},
+			"org_name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The organization name.",
+			},
+			"stoken_file_name": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The name of the server token file.",
+			},
+			"days_left": schema.Int64Attribute{
+				Computed:            true,
+				MarkdownDescription: "Number of days left before expiry.",
+			},
+			"status": schema.StringAttribute{
+				Computed:            true,
+				MarkdownDescription: "The status of the ADE integration.",
 			},
 		},
 	}
@@ -256,4 +296,12 @@ func (r *adeIntegrationResource) updateModelWithADEIntegration(data *adeIntegrat
 
 	data.Phone = types.StringValue(phone)
 	data.Email = types.StringValue(email)
+	data.AccessTokenExpiry = types.StringValue(adeResponse.AccessTokenExpiry)
+	data.ServerName = types.StringValue(adeResponse.ServerName)
+	data.ServerUUID = types.StringValue(adeResponse.ServerUUID)
+	data.AdminID = types.StringValue(adeResponse.AdminID)
+	data.OrgName = types.StringValue(adeResponse.OrgName)
+	data.STokenFileName = types.StringValue(adeResponse.STokenFileName)
+	data.DaysLeft = types.Int64Value(int64(adeResponse.DaysLeft))
+	data.Status = types.StringValue(adeResponse.Status)
 }
