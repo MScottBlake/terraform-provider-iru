@@ -108,7 +108,7 @@ func (d *threatsDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		}
 		var listResp threatResponse
 
-		path := fmt.Sprintf("/at-risk/threats?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/threat-details?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read threats, got error: %s", err))

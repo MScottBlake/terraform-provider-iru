@@ -22,14 +22,14 @@ type blueprintsDataSource struct {
 }
 
 type blueprintsDataSourceModel struct {
-	ID         types.String               `tfsdk:"id"`
-	Limit      types.Int64                `tfsdk:"limit"`
-	Offset     types.Int64                `tfsdk:"offset"`
-	Name       types.String               `tfsdk:"name"`
-	Blueprints []blueprintDataSourceModel `tfsdk:"blueprints"`
+	ID         types.String             `tfsdk:"id"`
+	Limit      types.Int64              `tfsdk:"limit"`
+	Offset     types.Int64              `tfsdk:"offset"`
+	Name       types.String             `tfsdk:"name"`
+	Blueprints []blueprintListItemModel `tfsdk:"blueprints"`
 }
 
-type blueprintDataSourceModel struct {
+type blueprintListItemModel struct {
 	ID             types.String `tfsdk:"id"`
 	Name           types.String `tfsdk:"name"`
 	Description    types.String `tfsdk:"description"`
@@ -165,9 +165,9 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	data.ID = types.StringValue("blueprints")
-	data.Blueprints = make([]blueprintDataSourceModel, 0, len(allBlueprints))
+	data.Blueprints = make([]blueprintListItemModel, 0, len(allBlueprints))
 	for _, blueprint := range allBlueprints {
-		data.Blueprints = append(data.Blueprints, blueprintDataSourceModel{
+		data.Blueprints = append(data.Blueprints, blueprintListItemModel{
 			ID:             types.StringValue(blueprint.ID),
 			Name:           types.StringValue(blueprint.Name),
 			Description:    types.StringValue(blueprint.Description),

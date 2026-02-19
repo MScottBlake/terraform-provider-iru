@@ -343,9 +343,22 @@ type DeviceCommandList struct {
 
 // BlueprintTemplate represents a blueprint template.
 type BlueprintTemplate struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	// Add other fields if necessary based on API response
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+// BlueprintTemplateCategory represents a category of blueprint templates.
+type BlueprintTemplateCategory struct {
+	ID        int                 `json:"id"`
+	Name      string              `json:"name"`
+	Templates []BlueprintTemplate `json:"templates"`
+}
+
+// BlueprintTemplateList represents the response from the templates endpoint.
+type BlueprintTemplateList struct {
+	Count   int                         `json:"count"`
+	Results []BlueprintTemplateCategory `json:"results"`
 }
 
 // PrismExport represents a Prism export job.
