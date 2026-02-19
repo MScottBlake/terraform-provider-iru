@@ -3,12 +3,12 @@
 page_title: "iru_device_lost_mode Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Get Lost Mode details for a specific device.
+  Get Lost Mode details for a specific device. To manage Lost Mode, use iru_device_action_enable_lost_mode, iru_device_action_disable_lost_mode (standard unlock), or iru_device_action_cancel_lost_mode (error recovery).
 ---
 
 # iru_device_lost_mode (Data Source)
 
-Get Lost Mode details for a specific device.
+Get Lost Mode details for a specific device. To manage Lost Mode, use `iru_device_action_enable_lost_mode`, `iru_device_action_disable_lost_mode` (standard unlock), or `iru_device_action_cancel_lost_mode` (error recovery).
 
 ## Example Usage
 

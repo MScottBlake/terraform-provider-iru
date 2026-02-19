@@ -33,3 +33,5 @@ action "iru_device_action_erase" "example" {
 - `erase_mode` (String) For Windows devices: WIPE, WIPE_CLOUD, WIPE_PROTECTED.
 - `pin` (String) The six-character PIN for Find My (macOS only).
 - `preserve_data_plan` (Boolean)
+- `return_to_service_enabled` (Boolean) Whether to enable Return to Service.
+- `return_to_service_profile` (String) The WiFi profile ID for Return to Service.

@@ -195,6 +195,7 @@ func (p *IruProvider) Actions(ctx context.Context) []func() action.Action {
 		NewDeviceUpdateInventoryAction,
 		NewDeviceEnableLostModeAction,
 		NewDeviceDisableLostModeAction,
+		NewDeviceCancelLostModeAction,
 		NewDevicePlayLostModeSoundAction,
 		NewDeviceUpdateLocationAction,
 		NewDeviceDeleteUserAction,

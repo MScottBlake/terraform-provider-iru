@@ -30,7 +30,7 @@ func (a *deviceDisableLostModeAction) Metadata(ctx context.Context, req action.M
 
 func (a *deviceDisableLostModeAction) Schema(ctx context.Context, req action.SchemaRequest, resp *action.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Disables Lost Mode on a specific device.",
+		MarkdownDescription: "Disables Lost Mode on a specific device. This is the **standard MDM command** used to unlock a healthy device that is currently in Lost Mode. Use this when a user has recovered their device and you want to return it to a normal state. If the command is already pending, the API will indicate it is already in progress.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,

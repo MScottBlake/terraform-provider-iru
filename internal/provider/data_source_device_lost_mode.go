@@ -34,7 +34,7 @@ func (d *deviceLostModeDataSource) Metadata(ctx context.Context, req datasource.
 
 func (d *deviceLostModeDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get Lost Mode details for a specific device.",
+		MarkdownDescription: "Get Lost Mode details for a specific device. To manage Lost Mode, use `iru_device_action_enable_lost_mode`, `iru_device_action_disable_lost_mode` (standard unlock), or `iru_device_action_cancel_lost_mode` (error recovery).",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,

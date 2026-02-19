@@ -3,12 +3,12 @@
 page_title: "iru_device_action_disable_lost_mode Action - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Disables Lost Mode on a specific device.
+  Disables Lost Mode on a specific device. This is the standard MDM command used to unlock a healthy device that is currently in Lost Mode. Use this when a user has recovered their device and you want to return it to a normal state. If the command is already pending, the API will indicate it is already in progress.
 ---
 
 # iru_device_action_disable_lost_mode (Action)
 
-Disables Lost Mode on a specific device.
+Disables Lost Mode on a specific device. This is the **standard MDM command** used to unlock a healthy device that is currently in Lost Mode. Use this when a user has recovered their device and you want to return it to a normal state. If the command is already pending, the API will indicate it is already in progress.
 
 ## Example Usage
 

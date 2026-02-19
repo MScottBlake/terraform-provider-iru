@@ -27,6 +27,8 @@ type deviceEraseActionModel struct {
 	DisallowProximitySetup types.Bool   `tfsdk:"disallow_proximity_setup"`
 	EraseMode              types.String `tfsdk:"erase_mode"`
 	EraseFlags             types.String `tfsdk:"erase_flags"`
+	ReturnToServiceEnabled types.Bool   `tfsdk:"return_to_service_enabled"`
+	ReturnToServiceProfile types.String `tfsdk:"return_to_service_profile"`
 }
 
 func (a *deviceEraseAction) Metadata(ctx context.Context, req action.MetadataRequest, resp *action.MetadataResponse) {
@@ -59,6 +61,14 @@ func (a *deviceEraseAction) Schema(ctx context.Context, req action.SchemaRequest
 				Optional:            true,
 				MarkdownDescription: "For Android devices: WIPE_EXTERNAL_STORAGE, WIPE_ESIMS.",
 			},
+			"return_to_service_enabled": schema.BoolAttribute{
+				Optional:            true,
+				MarkdownDescription: "Whether to enable Return to Service.",
+			},
+			"return_to_service_profile": schema.StringAttribute{
+				Optional:            true,
+				MarkdownDescription: "The WiFi profile ID for Return to Service.",
+			},
 		},
 	}
 }
@@ -85,6 +95,16 @@ func (a *deviceEraseAction) Invoke(ctx context.Context, req action.InvokeRequest
 	if !data.DisallowProximitySetup.IsNull() { payload["DisallowProximitySetup"] = data.DisallowProximitySetup.ValueBool() }
 	if !data.EraseMode.IsNull() { payload["erase_mode"] = data.EraseMode.ValueString() }
 	if !data.EraseFlags.IsNull() { payload["erase_flags"] = data.EraseFlags.ValueString() }
+
+	if !data.ReturnToServiceEnabled.IsNull() {
+		rts := map[string]interface{}{
+			"Enabled": data.ReturnToServiceEnabled.ValueBool(),
+		}
+		if !data.ReturnToServiceProfile.IsNull() {
+			rts["ProfileId"] = data.ReturnToServiceProfile.ValueString()
+		}
+		payload["ReturnToService"] = rts
+	}
 
 	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/erase", deviceID), payload, nil)
 	if err != nil {
