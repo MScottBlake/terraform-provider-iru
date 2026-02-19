@@ -83,7 +83,7 @@ func (d *deviceDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	}
 
 	var device client.Device
-	err := d.client.DoRequest(ctx, "GET", "/devices/"+data.ID.ValueString(), nil, &device)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/devices/"+data.ID.ValueString(), nil, &device)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read device, got error: %s", err))
 		return

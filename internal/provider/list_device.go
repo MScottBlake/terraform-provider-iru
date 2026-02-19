@@ -50,7 +50,7 @@ func (r *deviceListResource) Configure(ctx context.Context, req resource.Configu
 
 func (r *deviceListResource) List(ctx context.Context, req list.ListRequest, resp *list.ListResultsStream) {
 	var devices []client.Device
-	err := r.client.DoRequest(ctx, "GET", "/devices", nil, &devices)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/devices", nil, &devices)
 	if err != nil {
 		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
 			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list devices, got error: %v", err)),

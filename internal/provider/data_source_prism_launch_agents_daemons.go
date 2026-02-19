@@ -102,7 +102,7 @@ func (d *prismLaunchAgentsDaemonsDataSource) Read(ctx context.Context, req datas
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/launch_agents_and_daemons?" + params.Encode()
+		path := "/api/v1/prism/launch_agents_and_daemons?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

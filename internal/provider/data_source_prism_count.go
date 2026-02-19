@@ -63,7 +63,7 @@ func (d *prismCountDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	var response client.PrismCount
-	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/prism/count?category=%s", data.Category.ValueString()), nil, &response)
+	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/prism/count?category=%s", data.Category.ValueString()), nil, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism count, got error: %s", err))
 		return

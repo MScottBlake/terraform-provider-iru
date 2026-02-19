@@ -82,7 +82,7 @@ func (a *deviceEnableLostModeAction) Invoke(ctx context.Context, req action.Invo
 		payload["Footnote"] = data.Footnote.ValueString()
 	}
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/enablelostmode", deviceID), payload, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/enablelostmode", deviceID), payload, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to enable lost mode, got error: %s", err))
 		return

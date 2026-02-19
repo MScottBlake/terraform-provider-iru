@@ -14,6 +14,10 @@ func TestDoRequest(t *testing.T) {
 	t.Run("successful request", func(t *testing.T) {
 		expectedResponse := map[string]string{"foo": "bar"}
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Verify path
+			if r.URL.Path != "/api/v1/test" {
+				t.Errorf("Expected path /api/v1/test, got %s", r.URL.Path)
+			}
 			// Verify headers
 			if r.Header.Get("Authorization") != "Bearer test-token" {
 				t.Errorf("Expected Authorization header, got %s", r.Header.Get("Authorization"))
@@ -29,7 +33,7 @@ func TestDoRequest(t *testing.T) {
 
 		c := NewClient(server.URL, "test-token")
 		var respData map[string]string
-		err := c.DoRequest(context.Background(), "GET", "/test", nil, &respData)
+		err := c.DoRequest(context.Background(), "GET", "/api/v1/test", nil, &respData)
 
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)
@@ -41,13 +45,16 @@ func TestDoRequest(t *testing.T) {
 
 	t.Run("api error handling", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path != "/api/v1/test" {
+				t.Errorf("Expected path /api/v1/test, got %s", r.URL.Path)
+			}
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = w.Write([]byte("invalid request"))
 		}))
 		defer server.Close()
 
 		c := NewClient(server.URL, "test-token")
-		err := c.DoRequest(context.Background(), "POST", "/test", map[string]string{"in": "put"}, nil)
+		err := c.DoRequest(context.Background(), "POST", "/api/v1/test", map[string]string{"in": "put"}, nil)
 
 		if err == nil {
 			t.Fatal("Expected error for 400 status, got nil")
@@ -61,6 +68,9 @@ func TestDoRequest(t *testing.T) {
 func TestDoMultipartRequest(t *testing.T) {
 	t.Run("successful multipart request", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path != "/api/v1/upload" {
+				t.Errorf("Expected path /api/v1/upload, got %s", r.URL.Path)
+			}
 			// Verify content type
 			if !strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
 				t.Errorf("Expected multipart content type, got %s", r.Header.Get("Content-Type"))
@@ -98,7 +108,7 @@ func TestDoMultipartRequest(t *testing.T) {
 		var respData struct {
 			ID string `json:"id"`
 		}
-		err := c.DoMultipartRequest(context.Background(), "POST", "/upload", fields, "file", "test.txt", fileContent, &respData)
+		err := c.DoMultipartRequest(context.Background(), "POST", "/api/v1/upload", fields, "file", "test.txt", fileContent, &respData)
 
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)

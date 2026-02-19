@@ -110,7 +110,7 @@ func (r *inHouseAppResource) Create(ctx context.Context, req resource.CreateRequ
 
 	appRequest := r.mapToClient(&data)
 	var appResponse client.InHouseApp
-	err := r.client.DoRequest(ctx, "POST", "/library/ipa-apps", appRequest, &appResponse)
+	err := r.client.DoRequest(ctx, "POST", "/api/v1/library/ipa-apps", appRequest, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create in-house app, got error: %s", err))
 		return
@@ -144,7 +144,7 @@ func (r *inHouseAppResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	var appResponse client.InHouseApp
-	err := r.client.DoRequest(ctx, "GET", "/library/ipa-apps/"+id, nil, &appResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/ipa-apps/"+id, nil, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read in-house app, got error: %s", err))
 		return
@@ -164,7 +164,7 @@ func (r *inHouseAppResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	appRequest := r.mapToClient(&data)
 	var appResponse client.InHouseApp
-	err := r.client.DoRequest(ctx, "PATCH", "/library/ipa-apps/"+data.ID.ValueString(), appRequest, &appResponse)
+	err := r.client.DoRequest(ctx, "PATCH", "/api/v1/library/ipa-apps/"+data.ID.ValueString(), appRequest, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update in-house app, got error: %s", err))
 		return
@@ -186,7 +186,7 @@ func (r *inHouseAppResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/library/ipa-apps/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/library/ipa-apps/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete in-house app, got error: %s", err))
 		return

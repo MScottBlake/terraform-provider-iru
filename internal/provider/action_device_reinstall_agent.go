@@ -53,7 +53,7 @@ func (a *deviceReinstallAgentAction) Invoke(ctx context.Context, req action.Invo
 		return
 	}
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/reinstallagent", data.DeviceID.ValueString()), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/reinstallagent", data.DeviceID.ValueString()), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke reinstall agent, got error: %s", err))
 		return

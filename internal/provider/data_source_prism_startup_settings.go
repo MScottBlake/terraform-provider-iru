@@ -102,7 +102,7 @@ func (d *prismStartupSettingsDataSource) Read(ctx context.Context, req datasourc
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/startup_settings?" + params.Encode()
+		path := "/api/v1/prism/startup_settings?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

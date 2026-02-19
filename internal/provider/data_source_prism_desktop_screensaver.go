@@ -102,7 +102,7 @@ func (d *prismDesktopScreensaverDataSource) Read(ctx context.Context, req dataso
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/desktop_and_screensaver?" + params.Encode()
+		path := "/api/v1/prism/desktop_and_screensaver?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

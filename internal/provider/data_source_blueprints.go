@@ -139,7 +139,7 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			params.Add("name", data.Name.ValueString())
 		}
 
-		path := "/blueprints?" + params.Encode()
+		path := "/api/v1/blueprints?" + params.Encode()
 		type listBlueprintsResponse struct {
 			Results []client.Blueprint `json:"results"`
 		}

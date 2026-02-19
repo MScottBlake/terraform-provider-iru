@@ -100,7 +100,7 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 		}
 		var listResp vulnerabilityResponse
 
-		path := fmt.Sprintf("/vulnerability-management/vulnerabilities?size=%d&page=%d", size, page)
+		path := fmt.Sprintf("/api/v1/vulnerability-management/vulnerabilities?size=%d&page=%d", size, page)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read vulnerabilities, got error: %s", err))

@@ -111,7 +111,7 @@ func (r *prismExportResource) Create(ctx context.Context, req resource.CreateReq
 	// Could implement if needed.
 
 	var exportResp client.PrismExport
-	err := r.client.DoRequest(ctx, "POST", "/prism/export", reqBody, &exportResp)
+	err := r.client.DoRequest(ctx, "POST", "/api/v1/prism/export", reqBody, &exportResp)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create prism export, got error: %s", err))
 		return
@@ -139,7 +139,7 @@ func (r *prismExportResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	var exportResp client.PrismExport
-	err := r.client.DoRequest(ctx, "GET", "/prism/export/"+data.ID.ValueString(), nil, &exportResp)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/prism/export/"+data.ID.ValueString(), nil, &exportResp)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism export, got error: %s", err))
 		return

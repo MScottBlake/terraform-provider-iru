@@ -56,7 +56,7 @@ func (r *adeDeviceListResource) List(ctx context.Context, req list.ListRequest, 
 	page := 1
 	
 	for {
-		path := fmt.Sprintf("/integrations/apple/ade/devices?page=%d", page)
+		path := fmt.Sprintf("/api/v1/integrations/apple/ade/devices?page=%d", page)
 		
 		type adeDevicesResponse struct {
 			Results []client.ADEDevice `json:"results"`

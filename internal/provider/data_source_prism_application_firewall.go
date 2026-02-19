@@ -118,7 +118,7 @@ func (d *prismAppFirewallDataSource) Read(ctx context.Context, req datasource.Re
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/application_firewall?" + params.Encode()
+		path := "/api/v1/prism/application_firewall?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismAppFirewall `json:"data"`
 		}

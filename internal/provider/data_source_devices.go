@@ -184,7 +184,7 @@ func (d *devicesDataSource) Read(ctx context.Context, req datasource.ReadRequest
 			params.Add("blueprint_id", data.BlueprintID.ValueString())
 		}
 
-		path := "/devices?" + params.Encode()
+		path := "/api/v1/devices?" + params.Encode()
 		var pageResponse []client.Device
 		err := d.client.DoRequest(ctx, "GET", path, nil, &pageResponse)
 		if err != nil {

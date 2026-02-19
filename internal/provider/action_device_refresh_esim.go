@@ -56,7 +56,7 @@ func (a *deviceRefreshESIMAction) Invoke(ctx context.Context, req action.InvokeR
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/refreshesim", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/refreshesim", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to refresh eSIM, got error: %s", err))
 		return

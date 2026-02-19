@@ -95,7 +95,7 @@ func (r *blueprintLibraryItemResource) Create(ctx context.Context, req resource.
 
 	// Response is a list of IDs? Postman says: ["id1", "id2"...]
 	var response []string
-	err := r.client.DoRequest(ctx, "POST", fmt.Sprintf("/blueprints/%s/assign-library-item", bpID), payload, &response)
+	err := r.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/blueprints/%s/assign-library-item", bpID), payload, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to assign library item, got error: %s", err))
 		return
@@ -115,7 +115,7 @@ func (r *blueprintLibraryItemResource) Read(ctx context.Context, req resource.Re
 	// Verify assignment via List
 	// GET /blueprints/{id}/library-items
 	var items []client.BlueprintLibraryItem
-	err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/blueprints/%s/library-items", data.BlueprintID.ValueString()), nil, &items)
+	err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/blueprints/%s/library-items", data.BlueprintID.ValueString()), nil, &items)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list blueprint items, got error: %s", err))
 		return
@@ -149,7 +149,7 @@ func (r *blueprintLibraryItemResource) Delete(ctx context.Context, req resource.
 	}
 
 	// Attempting DELETE on library-items endpoint as best guess fix for Postman error
-	err := r.client.DoRequest(ctx, "DELETE", fmt.Sprintf("/blueprints/%s/library-items/%s", data.BlueprintID.ValueString(), data.LibraryItemID.ValueString()), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", fmt.Sprintf("/api/v1/blueprints/%s/library-items/%s", data.BlueprintID.ValueString(), data.LibraryItemID.ValueString()), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to remove library item, got error: %s", err))
 		return

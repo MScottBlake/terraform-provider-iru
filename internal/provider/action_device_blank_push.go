@@ -56,7 +56,7 @@ func (a *deviceBlankPushAction) Invoke(ctx context.Context, req action.InvokeReq
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/blank-push", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/blank-push", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke blank push, got error: %s", err))
 		return

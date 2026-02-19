@@ -152,7 +152,7 @@ func (r *deviceResource) Read(ctx context.Context, req resource.ReadRequest, res
 	}
 
 	var deviceResponse client.Device
-	err := r.client.DoRequest(ctx, "GET", "/devices/"+id, nil, &deviceResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/devices/"+id, nil, &deviceResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read device, got error: %s", err))
 		return
@@ -193,7 +193,7 @@ func (r *deviceResource) Update(ctx context.Context, req resource.UpdateRequest,
 	
 	if len(updateRequest) > 0 {
 		var deviceResponse client.Device
-		err := r.client.DoRequest(ctx, "PATCH", "/devices/"+plan.ID.ValueString(), updateRequest, &deviceResponse)
+		err := r.client.DoRequest(ctx, "PATCH", "/api/v1/devices/"+plan.ID.ValueString(), updateRequest, &deviceResponse)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update device, got error: %s", err))
 			return
@@ -222,7 +222,7 @@ func (r *deviceResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/devices/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/devices/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete device, got error: %s", err))
 		return

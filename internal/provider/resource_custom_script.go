@@ -139,7 +139,7 @@ func (r *customScriptResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	var scriptResponse client.CustomScript
-	err := r.client.DoRequest(ctx, "POST", "/library/custom-scripts", scriptRequest, &scriptResponse)
+	err := r.client.DoRequest(ctx, "POST", "/api/v1/library/custom-scripts", scriptRequest, &scriptResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create custom script, got error: %s", err))
 		return
@@ -182,7 +182,7 @@ func (r *customScriptResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	var scriptResponse client.CustomScript
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-scripts/"+id, nil, &scriptResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/library/custom-scripts/"+id, nil, &scriptResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom script, got error: %s", err))
 		return
@@ -219,7 +219,7 @@ func (r *customScriptResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	var scriptResponse client.CustomScript
-	err := r.client.DoRequest(ctx, "PATCH", "/library/custom-scripts/"+data.ID.ValueString(), scriptRequest, &scriptResponse)
+	err := r.client.DoRequest(ctx, "PATCH", "/api/v1/library/custom-scripts/"+data.ID.ValueString(), scriptRequest, &scriptResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update custom script, got error: %s", err))
 		return
@@ -249,7 +249,7 @@ func (r *customScriptResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/library/custom-scripts/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/library/custom-scripts/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete custom script, got error: %s", err))
 		return

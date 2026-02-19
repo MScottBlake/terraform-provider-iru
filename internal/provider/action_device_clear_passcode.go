@@ -56,7 +56,7 @@ func (a *deviceClearPasscodeAction) Invoke(ctx context.Context, req action.Invok
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/clear-passcode", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/clear-passcode", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke clear passcode, got error: %s", err))
 		return

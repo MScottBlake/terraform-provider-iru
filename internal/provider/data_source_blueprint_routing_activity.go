@@ -98,7 +98,7 @@ func (d *blueprintRoutingActivityDataSource) Read(ctx context.Context, req datas
 	}
 
 	var response client.BlueprintRoutingActivityList
-	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/blueprint-routing/activity?limit=%d", limit), nil, &response)
+	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/blueprint-routing/activity?limit=%d", limit), nil, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read blueprint routing activity, got error: %s", err))
 		return

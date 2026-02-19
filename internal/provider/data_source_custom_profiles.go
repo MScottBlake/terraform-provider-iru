@@ -154,7 +154,7 @@ func (d *customProfilesDataSource) Read(ctx context.Context, req datasource.Read
 			params.Add("name", data.Name.ValueString())
 		}
 
-		path := "/library/custom-profiles?" + params.Encode()
+		path := "/api/v1/library/custom-profiles?" + params.Encode()
 		type listProfilesResponse struct {
 			Results []client.CustomProfile `json:"results"`
 		}

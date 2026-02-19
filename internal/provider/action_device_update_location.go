@@ -56,7 +56,7 @@ func (a *deviceUpdateLocationAction) Invoke(ctx context.Context, req action.Invo
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/updatelocation", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/updatelocation", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update location, got error: %s", err))
 		return

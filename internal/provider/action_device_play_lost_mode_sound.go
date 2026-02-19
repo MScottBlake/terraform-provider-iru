@@ -56,7 +56,7 @@ func (a *devicePlayLostModeSoundAction) Invoke(ctx context.Context, req action.I
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/playlostmodesound", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/playlostmodesound", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to play lost mode sound, got error: %s", err))
 		return

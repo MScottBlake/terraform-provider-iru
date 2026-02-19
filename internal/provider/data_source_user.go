@@ -67,7 +67,7 @@ func (d *userDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 	}
 
 	var user client.User
-	err := d.client.DoRequest(ctx, "GET", "/users/"+data.ID.ValueString(), nil, &user)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/users/"+data.ID.ValueString(), nil, &user)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read user, got error: %s", err))
 		return

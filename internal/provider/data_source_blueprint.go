@@ -75,7 +75,7 @@ func (d *blueprintDataSource) Read(ctx context.Context, req datasource.ReadReque
 	}
 
 	var blueprint client.Blueprint
-	err := d.client.DoRequest(ctx, "GET", "/blueprints/"+data.ID.ValueString(), nil, &blueprint)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/blueprints/"+data.ID.ValueString(), nil, &blueprint)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read blueprint, got error: %s", err))
 		return

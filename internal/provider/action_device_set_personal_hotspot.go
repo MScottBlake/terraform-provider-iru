@@ -65,7 +65,7 @@ func (a *deviceSetPersonalHotspotAction) Invoke(ctx context.Context, req action.
 		"Enabled": data.Enabled.ValueBool(),
 	}
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/togglepersonalhotspot", deviceID), payload, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/togglepersonalhotspot", deviceID), payload, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to set personal hotspot, got error: %s", err))
 		return

@@ -102,7 +102,7 @@ func (d *prismKernelExtensionsDataSource) Read(ctx context.Context, req datasour
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/kernel_extensions?" + params.Encode()
+		path := "/api/v1/prism/kernel_extensions?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

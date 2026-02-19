@@ -162,7 +162,7 @@ func (r *blueprintResource) Create(ctx context.Context, req resource.CreateReque
 	}
 
 	var blueprintResponse client.Blueprint
-	err := r.client.DoRequest(ctx, "POST", "/blueprints", blueprintRequest, &blueprintResponse)
+	err := r.client.DoRequest(ctx, "POST", "/api/v1/blueprints", blueprintRequest, &blueprintResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create blueprint, got error: %s", err))
 		return
@@ -198,7 +198,7 @@ func (r *blueprintResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	var blueprintResponse client.Blueprint
-	err := r.client.DoRequest(ctx, "GET", "/blueprints/"+id, nil, &blueprintResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/blueprints/"+id, nil, &blueprintResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read blueprint, got error: %s", err))
 		return
@@ -227,7 +227,7 @@ func (r *blueprintResource) Update(ctx context.Context, req resource.UpdateReque
 	blueprintRequest.EnrollmentCode.IsActive = data.EnrollmentCodeActive.ValueBool()
 
 	var blueprintResponse client.Blueprint
-	err := r.client.DoRequest(ctx, "PATCH", "/blueprints/"+data.ID.ValueString(), blueprintRequest, &blueprintResponse)
+	err := r.client.DoRequest(ctx, "PATCH", "/api/v1/blueprints/"+data.ID.ValueString(), blueprintRequest, &blueprintResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update blueprint, got error: %s", err))
 		return
@@ -251,7 +251,7 @@ func (r *blueprintResource) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/blueprints/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/blueprints/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete blueprint, got error: %s", err))
 		return

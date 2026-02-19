@@ -120,7 +120,7 @@ func (d *adeDeviceDataSource) Read(ctx context.Context, req datasource.ReadReque
 	}
 
 	var deviceResponse client.ADEDevice
-	err := d.client.DoRequest(ctx, "GET", "/integrations/apple/ade/devices/"+data.ID.ValueString(), nil, &deviceResponse)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/integrations/apple/ade/devices/"+data.ID.ValueString(), nil, &deviceResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read ADE device, got error: %s", err))
 		return

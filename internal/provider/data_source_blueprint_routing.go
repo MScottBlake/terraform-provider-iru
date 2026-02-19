@@ -71,7 +71,7 @@ func (d *blueprintRoutingDataSource) Read(ctx context.Context, req datasource.Re
 	var data blueprintRoutingDataSourceModel
 
 	var response client.BlueprintRouting
-	err := d.client.DoRequest(ctx, "GET", "/blueprint-routing/", nil, &response)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/blueprint-routing/", nil, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read blueprint routing, got error: %s", err))
 		return

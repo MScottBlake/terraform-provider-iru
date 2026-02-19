@@ -96,7 +96,7 @@ func (d *deviceCommandsDataSource) Read(ctx context.Context, req datasource.Read
 	}
 
 	var response client.DeviceCommandList
-	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/commands?limit=%d", data.DeviceID.ValueString(), limit), nil, &response)
+	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/devices/%s/commands?limit=%d", data.DeviceID.ValueString(), limit), nil, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read device commands, got error: %s", err))
 		return

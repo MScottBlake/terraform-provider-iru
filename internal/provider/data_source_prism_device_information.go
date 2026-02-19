@@ -106,7 +106,7 @@ func (d *prismDeviceInformationDataSource) Read(ctx context.Context, req datasou
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/device_information?" + params.Encode()
+		path := "/api/v1/prism/device_information?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

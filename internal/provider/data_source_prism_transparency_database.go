@@ -104,7 +104,7 @@ func (d *prismTransparencyDatabaseDataSource) Read(ctx context.Context, req data
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/transparency_database?" + params.Encode()
+		path := "/api/v1/prism/transparency_database?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

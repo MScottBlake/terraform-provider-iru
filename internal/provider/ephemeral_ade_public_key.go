@@ -52,7 +52,7 @@ func (r *adePublicKeyEphemeralResource) Open(ctx context.Context, req ephemeral.
 	var data adePublicKeyEphemeralResourceModel
 
 	// Need a custom GET that returns raw string
-	reqRaw, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/integrations/apple/ade/public_key/", r.client.APIURL), nil)
+	reqRaw, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/v1/integrations/apple/ade/public_key/", r.client.APIURL), nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create request, got error: %s", err))
 		return

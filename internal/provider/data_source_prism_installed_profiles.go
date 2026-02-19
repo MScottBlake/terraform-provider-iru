@@ -104,7 +104,7 @@ func (d *prismInstalledProfilesDataSource) Read(ctx context.Context, req datasou
 		params.Add("limit", fmt.Sprintf("%d", limit))
 		params.Add("offset", fmt.Sprintf("%d", offset))
 
-		path := "/prism/installed_profiles?" + params.Encode()
+		path := "/api/v1/prism/installed_profiles?" + params.Encode()
 		type prismResponse struct {
 			Data []client.PrismEntry `json:"data"`
 		}

@@ -126,7 +126,7 @@ func (d *adeIntegrationDevicesDataSource) Read(ctx context.Context, req datasour
 		params := url.Values{}
 		params.Add("page", fmt.Sprintf("%d", page))
 
-		path := fmt.Sprintf("/integrations/apple/ade/%s/devices?%s", data.ADETokenID.ValueString(), params.Encode())
+		path := fmt.Sprintf("/api/v1/integrations/apple/ade/%s/devices?%s", data.ADETokenID.ValueString(), params.Encode())
 		
 		type adeDevicesResponse struct {
 			Results []client.ADEDevice `json:"results"`

@@ -56,7 +56,7 @@ func (a *deviceDisableLostModeAction) Invoke(ctx context.Context, req action.Inv
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/disablelostmode", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/disablelostmode", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to disable lost mode, got error: %s", err))
 		return

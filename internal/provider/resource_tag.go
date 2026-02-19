@@ -99,7 +99,7 @@ func (r *tagResource) Create(ctx context.Context, req resource.CreateRequest, re
 	}
 
 	var tagResponse client.Tag
-	err := r.client.DoRequest(ctx, "POST", "/tags", tagRequest, &tagResponse)
+	err := r.client.DoRequest(ctx, "POST", "/api/v1/tags", tagRequest, &tagResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create tag, got error: %s", err))
 		return
@@ -136,7 +136,7 @@ func (r *tagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 	}
 
 	var tagResponse client.Tag
-	err := r.client.DoRequest(ctx, "GET", "/tags/"+id, nil, &tagResponse)
+	err := r.client.DoRequest(ctx, "GET", "/api/v1/tags/"+id, nil, &tagResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tag, got error: %s", err))
 		return
@@ -161,7 +161,7 @@ func (r *tagResource) Update(ctx context.Context, req resource.UpdateRequest, re
 	}
 
 	var tagResponse client.Tag
-	err := r.client.DoRequest(ctx, "PATCH", "/tags/"+data.ID.ValueString(), tagRequest, &tagResponse)
+	err := r.client.DoRequest(ctx, "PATCH", "/api/v1/tags/"+data.ID.ValueString(), tagRequest, &tagResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update tag, got error: %s", err))
 		return
@@ -185,7 +185,7 @@ func (r *tagResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 		return
 	}
 
-	err := r.client.DoRequest(ctx, "DELETE", "/tags/"+data.ID.ValueString(), nil, nil)
+	err := r.client.DoRequest(ctx, "DELETE", "/api/v1/tags/"+data.ID.ValueString(), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete tag, got error: %s", err))
 		return

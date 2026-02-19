@@ -69,7 +69,7 @@ func (d *blueprintTemplatesDataSource) Read(ctx context.Context, req datasource.
 	var data blueprintTemplatesDataSourceModel
 
 	var response client.BlueprintTemplateList
-	err := d.client.DoRequest(ctx, "GET", "/blueprints/templates", nil, &response)
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/blueprints/templates", nil, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list blueprint templates, got error: %s", err))
 		return

@@ -142,7 +142,7 @@ func (d *usersDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 			params.Add("email", data.Email.ValueString())
 		}
 
-		path := "/users?" + params.Encode()
+		path := "/api/v1/users?" + params.Encode()
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read users, got error: %s", err))

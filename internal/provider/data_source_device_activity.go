@@ -92,7 +92,7 @@ func (d *deviceActivityDataSource) Read(ctx context.Context, req datasource.Read
 	}
 
 	var response client.DeviceActivityList
-	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/devices/%s/activity?limit=%d", data.DeviceID.ValueString(), limit), nil, &response)
+	err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/api/v1/devices/%s/activity?limit=%d", data.DeviceID.ValueString(), limit), nil, &response)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read device activity, got error: %s", err))
 		return

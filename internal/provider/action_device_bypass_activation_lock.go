@@ -77,7 +77,7 @@ func (a *deviceBypassActivationLockAction) Invoke(ctx context.Context, req actio
 	// I'll assume it exists as an action to trigger bypass if MDM supports it.
 	// If not, I'll remove it in next step.
 	
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/bypass-activation-lock", deviceID), nil, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/bypass-activation-lock", deviceID), nil, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke bypass activation lock, got error: %s", err))
 		return

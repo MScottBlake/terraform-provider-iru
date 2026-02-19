@@ -86,7 +86,7 @@ func (a *deviceEraseAction) Invoke(ctx context.Context, req action.InvokeRequest
 	if !data.EraseMode.IsNull() { payload["erase_mode"] = data.EraseMode.ValueString() }
 	if !data.EraseFlags.IsNull() { payload["erase_flags"] = data.EraseFlags.ValueString() }
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/erase", deviceID), payload, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/erase", deviceID), payload, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke erase, got error: %s", err))
 		return

@@ -89,7 +89,7 @@ func (a *deviceDeleteUserAction) Invoke(ctx context.Context, req action.InvokeRe
 		payload["UserName"] = data.UserName.ValueString()
 	}
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/deleteuser", deviceID), payload, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/deleteuser", deviceID), payload, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete user, got error: %s", err))
 		return

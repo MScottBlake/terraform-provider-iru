@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"os"
+	"strings"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/action"
@@ -80,6 +81,8 @@ func (p *IruProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		resp.Diagnostics.AddError("Missing API URL", "The 'api_url' provider attribute or IRU_API_URL environment variable must be set.")
 		return
 	}
+
+	apiURL = normalizeAPIURL(apiURL)
 
 	if apiToken == "" {
 		resp.Diagnostics.AddError("Missing API Token", "The 'api_token' provider attribute or IRU_API_TOKEN environment variable must be set.")
@@ -223,4 +226,11 @@ func New(version string) func() provider.Provider {
 			version: version,
 		}
 	}
+}
+
+func normalizeAPIURL(apiURL string) string {
+	if !strings.Contains(apiURL, "://") {
+		return "https://" + apiURL
+	}
+	return apiURL
 }

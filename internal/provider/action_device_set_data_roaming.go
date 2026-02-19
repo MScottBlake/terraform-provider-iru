@@ -65,7 +65,7 @@ func (a *deviceSetDataRoamingAction) Invoke(ctx context.Context, req action.Invo
 		"Enabled": data.Enabled.ValueBool(),
 	}
 
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/devices/%s/action/toggledataroaming", deviceID), payload, nil)
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/toggledataroaming", deviceID), payload, nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to set data roaming, got error: %s", err))
 		return
