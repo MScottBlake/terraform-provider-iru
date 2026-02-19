@@ -28,19 +28,20 @@ type adeIntegrationResource struct {
 }
 
 type adeIntegrationResourceModel struct {
-	ID                types.String `tfsdk:"id"`
-	BlueprintID       types.String `tfsdk:"blueprint_id"`
-	Phone             types.String `tfsdk:"phone"`
-	Email             types.String `tfsdk:"email"`
-	MDMServerTokenFile types.String `tfsdk:"mdm_server_token_file"`
-	AccessTokenExpiry types.String `tfsdk:"access_token_expiry"`
-	ServerName        types.String `tfsdk:"server_name"`
-	ServerUUID        types.String `tfsdk:"server_uuid"`
-	AdminID           types.String `tfsdk:"admin_id"`
-	OrgName           types.String `tfsdk:"org_name"`
-	STokenFileName    types.String `tfsdk:"stoken_file_name"`
-	DaysLeft          types.Int64  `tfsdk:"days_left"`
-	Status            types.String `tfsdk:"status"`
+	ID                  types.String `tfsdk:"id"`
+	BlueprintID         types.String `tfsdk:"blueprint_id"`
+	Phone               types.String `tfsdk:"phone"`
+	Email               types.String `tfsdk:"email"`
+	MDMServerTokenFile  types.String `tfsdk:"mdm_server_token_file"`
+	AccessTokenExpiry   types.String `tfsdk:"access_token_expiry"`
+	ServerName          types.String `tfsdk:"server_name"`
+	ServerUUID          types.String `tfsdk:"server_uuid"`
+	AdminID             types.String `tfsdk:"admin_id"`
+	OrgName             types.String `tfsdk:"org_name"`
+	STokenFileName      types.String `tfsdk:"stoken_file_name"`
+	DaysLeft            types.Int64  `tfsdk:"days_left"`
+	Status              types.String `tfsdk:"status"`
+	UseBlueprintRouting types.Bool   `tfsdk:"use_blueprint_routing"`
 }
 
 type adeIntegrationResourceIdentityModel struct {
@@ -63,8 +64,8 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 				},
 			},
 			"blueprint_id": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The UUID of the default blueprint to associate with the integration.",
+				Optional:            true,
+				MarkdownDescription: "The UUID of the default blueprint to associate with the integration. Required if use_blueprint_routing is false.",
 			},
 			"phone": schema.StringAttribute{
 				Required:            true,
@@ -78,6 +79,11 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 				Required:            true,
 				Sensitive:           true,
 				MarkdownDescription: "The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.",
+			},
+			"use_blueprint_routing": schema.BoolAttribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Whether to use Blueprint Routing for this integration. If true, blueprint_id should be null.",
 			},
 			"access_token_expiry": schema.StringAttribute{
 				Computed:            true,
@@ -152,9 +158,20 @@ func (r *adeIntegrationResource) Create(ctx context.Context, req resource.Create
 	}
 
 	fields := map[string]string{
-		"blueprint_id": data.BlueprintID.ValueString(),
-		"phone":        data.Phone.ValueString(),
-		"email":        data.Email.ValueString(),
+		"phone": data.Phone.ValueString(),
+		"email": data.Email.ValueString(),
+	}
+
+	if !data.BlueprintID.IsNull() {
+		fields["blueprint_id"] = data.BlueprintID.ValueString()
+	}
+
+	if !data.UseBlueprintRouting.IsNull() {
+		if data.UseBlueprintRouting.ValueBool() {
+			fields["use_blueprint_routing"] = "true"
+		} else {
+			fields["use_blueprint_routing"] = "false"
+		}
 	}
 
 	fileContent := []byte(data.MDMServerTokenFile.ValueString())
@@ -220,10 +237,20 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 	if !plan.MDMServerTokenFile.Equal(state.MDMServerTokenFile) {
 		// Token changed, use Renew endpoint
 		fields := map[string]string{
-			"blueprint_id": plan.BlueprintID.ValueString(),
-			"phone":        plan.Phone.ValueString(),
-			"email":        plan.Email.ValueString(),
+			"phone": plan.Phone.ValueString(),
+			"email": plan.Email.ValueString(),
 		}
+		if !plan.BlueprintID.IsNull() {
+			fields["blueprint_id"] = plan.BlueprintID.ValueString()
+		}
+		if !plan.UseBlueprintRouting.IsNull() {
+			if plan.UseBlueprintRouting.ValueBool() {
+				fields["use_blueprint_routing"] = "true"
+			} else {
+				fields["use_blueprint_routing"] = "false"
+			}
+		}
+
 		fileContent := []byte(plan.MDMServerTokenFile.ValueString())
 		
 		var adeResponse client.ADEIntegration
@@ -237,9 +264,14 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 	} else {
 		// Normal update
 		updateRequest := client.ADEIntegration{
-			BlueprintID: plan.BlueprintID.ValueString(),
-			Phone:       plan.Phone.ValueString(),
-			Email:       plan.Email.ValueString(),
+			Phone: plan.Phone.ValueString(),
+			Email: plan.Email.ValueString(),
+		}
+		if !plan.BlueprintID.IsNull() {
+			updateRequest.BlueprintID = plan.BlueprintID.ValueString()
+		}
+		if !plan.UseBlueprintRouting.IsNull() {
+			updateRequest.UseBlueprintRouting = plan.UseBlueprintRouting.ValueBool()
 		}
 		
 		var adeResponse client.ADEIntegration
@@ -304,4 +336,5 @@ func (r *adeIntegrationResource) updateModelWithADEIntegration(data *adeIntegrat
 	data.STokenFileName = types.StringValue(adeResponse.STokenFileName)
 	data.DaysLeft = types.Int64Value(int64(adeResponse.DaysLeft))
 	data.Status = types.StringValue(adeResponse.Status)
+	data.UseBlueprintRouting = types.BoolValue(adeResponse.UseBlueprintRouting)
 }

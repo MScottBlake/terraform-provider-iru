@@ -98,6 +98,7 @@ func (p *IruProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewBlueprintResource,
+		NewBlueprintRoutingResource,
 		NewADEIntegrationResource,
 		NewADEDeviceResource,
 		NewDeviceResource,
@@ -116,6 +117,8 @@ func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewADEDeviceDataSource,
 		NewADEIntegrationDevicesDataSource,
 		NewBlueprintsDataSource,
+		NewBlueprintRoutingDataSource,
+		NewBlueprintRoutingActivityDataSource,
 		NewTagsDataSource,
 		NewCustomScriptsDataSource,
 		NewCustomProfilesDataSource,

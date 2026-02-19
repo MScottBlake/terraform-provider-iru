@@ -83,9 +83,10 @@ func (r *adeIntegrationListResource) List(ctx context.Context, req list.ListRequ
 			}
 
 			resourceModel := adeIntegrationResourceModel{
-				ID:    types.StringValue(integration.ID),
-				Phone: types.StringValue(phone),
-				Email: types.StringValue(email),
+				ID:                  types.StringValue(integration.ID),
+				Phone:               types.StringValue(phone),
+				Email:               types.StringValue(email),
+				UseBlueprintRouting: types.BoolValue(integration.UseBlueprintRouting),
 			}
 			if integration.Blueprint != nil {
 				resourceModel.BlueprintID = types.StringValue(integration.Blueprint.ID)

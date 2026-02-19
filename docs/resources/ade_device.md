@@ -19,6 +19,7 @@ Manages a Kandji ADE Device. Note: ADE Devices cannot be created via Terraform, 
 
 - `asset_tag` (String) The asset tag of the Device.
 - `blueprint_id` (String) The ID of the blueprint assigned to the Device.
+- `use_blueprint_routing` (Boolean) Whether to use Blueprint Routing for this device. If true, blueprint_id should be null.
 - `user_id` (String) The ID of the user assigned to the Device.
 
 ### Read-Only

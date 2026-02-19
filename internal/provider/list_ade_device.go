@@ -99,9 +99,10 @@ func (r *adeDeviceListResource) List(ctx context.Context, req list.ListRequest, 
 				UserID:        types.StringValue(device.UserID),
 				DEPAccount:    types.StringValue(device.DEPAccount),
 				DeviceFamily:  types.StringValue(device.DeviceFamily),
-				OS:            types.StringValue(device.OS),
-				ProfileStatus: types.StringValue(device.ProfileStatus),
-				IsEnrolled:    types.BoolValue(device.IsEnrolled),
+				OS:                  types.StringValue(device.OS),
+				ProfileStatus:       types.StringValue(device.ProfileStatus),
+				IsEnrolled:          types.BoolValue(device.IsEnrolled),
+				UseBlueprintRouting: types.BoolValue(device.UseBlueprintRouting),
 			}
 			result.Diagnostics.Append(result.Resource.Set(ctx, &resourceModel)...)
 		}

@@ -35,19 +35,20 @@ type adeDevicesDataSourceModel struct {
 }
 
 type adeDeviceModel struct {
-	ID            types.String `tfsdk:"id"`
-	SerialNumber  types.String `tfsdk:"serial_number"`
-	Model         types.String `tfsdk:"model"`
-	Description   types.String `tfsdk:"description"`
-	AssetTag      types.String `tfsdk:"asset_tag"`
-	Color         types.String `tfsdk:"color"`
-	BlueprintID   types.String `tfsdk:"blueprint_id"`
-	UserID        types.String `tfsdk:"user_id"`
-	DEPAccount    types.String `tfsdk:"dep_account"`
-	DeviceFamily  types.String `tfsdk:"device_family"`
-	OS            types.String `tfsdk:"os"`
-	ProfileStatus types.String `tfsdk:"profile_status"`
-	IsEnrolled    types.Bool   `tfsdk:"is_enrolled"`
+	ID                  types.String `tfsdk:"id"`
+	SerialNumber        types.String `tfsdk:"serial_number"`
+	Model               types.String `tfsdk:"model"`
+	Description         types.String `tfsdk:"description"`
+	AssetTag            types.String `tfsdk:"asset_tag"`
+	Color               types.String `tfsdk:"color"`
+	BlueprintID         types.String `tfsdk:"blueprint_id"`
+	UserID              types.String `tfsdk:"user_id"`
+	DEPAccount          types.String `tfsdk:"dep_account"`
+	DeviceFamily        types.String `tfsdk:"device_family"`
+	OS                  types.String `tfsdk:"os"`
+	ProfileStatus       types.String `tfsdk:"profile_status"`
+	IsEnrolled          types.Bool   `tfsdk:"is_enrolled"`
+	UseBlueprintRouting types.Bool   `tfsdk:"use_blueprint_routing"`
 }
 
 func (d *adeDevicesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -149,6 +150,10 @@ func (d *adeDevicesDataSource) Schema(ctx context.Context, req datasource.Schema
 							Computed:            true,
 							MarkdownDescription: "Whether the device is enrolled.",
 						},
+						"use_blueprint_routing": schema.BoolAttribute{
+							Computed:            true,
+							MarkdownDescription: "Whether the device uses Blueprint Routing.",
+						},
 					},
 				},
 			},
@@ -239,6 +244,7 @@ func (d *adeDevicesDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			OS:            types.StringValue(device.OS),
 			ProfileStatus: types.StringValue(device.ProfileStatus),
 			IsEnrolled:    types.BoolValue(device.IsEnrolled),
+			UseBlueprintRouting: types.BoolValue(device.UseBlueprintRouting),
 		})
 	}
 
