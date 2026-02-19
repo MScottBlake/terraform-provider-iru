@@ -80,7 +80,7 @@ func (d *prismTransparencyDatabaseDataSource) Read(ctx context.Context, req data
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/transparency_database/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/transparency_database?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism transparency_database, got error: %s", err))

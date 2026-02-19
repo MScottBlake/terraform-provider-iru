@@ -11,9 +11,10 @@ func TestAccUserListResource(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: `
-# List resources test
-`,
+				Config: `data "iru_blueprints" "test" {}`,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.iru_blueprints.test", "id"),
+				),
 			},
 		},
 	})

@@ -13,6 +13,7 @@ func TestAccVulnerabilitiesDataSource(t *testing.T) {
 			{
 				Config: `data "iru_vulnerabilities" "test" {}`,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.iru_vulnerabilities.test", "id"),
 					resource.TestCheckResourceAttrSet("data.iru_vulnerabilities.test", "results.#"),
 				),
 			},

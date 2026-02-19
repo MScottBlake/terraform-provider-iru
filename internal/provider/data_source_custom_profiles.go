@@ -121,7 +121,7 @@ func (d *customProfilesDataSource) Read(ctx context.Context, req datasource.Read
 		}
 		var listResp listProfilesResponse
 		
-		path := fmt.Sprintf("/library/custom-profiles/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/library/custom-profiles?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom profiles, got error: %s", err))

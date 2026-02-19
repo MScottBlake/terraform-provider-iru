@@ -83,7 +83,7 @@ func (d *behavioralDetectionsDataSource) Read(ctx context.Context, req datasourc
 		}
 		var listResp bdResponse
 		
-		path := fmt.Sprintf("/at-risk/behavioral-detections/?page=%d", page)
+		path := fmt.Sprintf("/at-risk/behavioral-detections?page=%d", page)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read behavioral detections, got error: %s", err))

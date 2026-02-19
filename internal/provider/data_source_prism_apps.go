@@ -21,6 +21,7 @@ type prismAppsDataSource struct {
 }
 
 type prismAppsDataSourceModel struct {
+	ID      types.String    `tfsdk:"id"`
 	Results []prismAppModel `tfsdk:"results"`
 }
 
@@ -42,6 +43,9 @@ func (d *prismAppsDataSource) Schema(ctx context.Context, req datasource.SchemaR
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List applications installed on devices from Prism.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -80,7 +84,7 @@ func (d *prismAppsDataSource) Read(ctx context.Context, req datasource.ReadReque
 		}
 		var listResp prismAppResponse
 		
-		path := fmt.Sprintf("/prism/apps/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/apps?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism apps, got error: %s", err))
@@ -106,6 +110,8 @@ func (d *prismAppsDataSource) Read(ctx context.Context, req datasource.ReadReque
 			Path:         types.StringValue(item.Path),
 		})
 	}
+
+	data.ID = types.StringValue("prism_apps")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

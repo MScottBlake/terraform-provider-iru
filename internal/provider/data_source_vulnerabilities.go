@@ -21,6 +21,7 @@ type vulnerabilitiesDataSource struct {
 }
 
 type vulnerabilitiesDataSourceModel struct {
+	ID      types.String         `tfsdk:"id"`
 	Results []vulnerabilityModel `tfsdk:"results"`
 }
 
@@ -42,6 +43,9 @@ func (d *vulnerabilitiesDataSource) Schema(ctx context.Context, req datasource.S
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all vulnerabilities from Vulnerability Management.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"results": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -96,7 +100,7 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 		}
 		var listResp vulnerabilityResponse
 		
-		path := fmt.Sprintf("/vulnerability-management/vulnerabilities/?size=%d&page=%d", size, page)
+		path := fmt.Sprintf("/vulnerability-management/vulnerabilities?size=%d&page=%d", size, page)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read vulnerabilities, got error: %s", err))
@@ -125,6 +129,8 @@ func (d *vulnerabilitiesDataSource) Read(ctx context.Context, req datasource.Rea
 			Software:           softwareList,
 		})
 	}
+
+	data.ID = types.StringValue("vulnerabilities")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

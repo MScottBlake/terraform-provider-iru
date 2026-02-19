@@ -74,7 +74,7 @@ func (d *prismActivationLockDataSource) Read(ctx context.Context, req datasource
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/activation_lock/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/activation_lock?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism activation_lock, got error: %s", err))

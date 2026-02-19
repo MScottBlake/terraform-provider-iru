@@ -78,7 +78,7 @@ func (d *prismStartupSettingsDataSource) Read(ctx context.Context, req datasourc
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/startup_settings/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/startup_settings?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism startup_settings, got error: %s", err))

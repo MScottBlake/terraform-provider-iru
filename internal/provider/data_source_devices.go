@@ -121,7 +121,7 @@ func (d *devicesDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		// I'll assume array.
 		// Pagination parameters: `limit`, `offset`.
 		
-		path := fmt.Sprintf("/devices/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/devices?limit=%d&offset=%d", limit, offset)
 		var pageResponse []client.Device
 		err := d.client.DoRequest(ctx, "GET", path, nil, &pageResponse)
 		if err != nil {

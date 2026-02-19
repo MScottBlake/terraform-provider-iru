@@ -78,7 +78,7 @@ func (d *prismDesktopScreensaverDataSource) Read(ctx context.Context, req dataso
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/desktop_screensaver/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/desktop_screensaver?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism desktop_screensaver, got error: %s", err))

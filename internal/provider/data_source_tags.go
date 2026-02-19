@@ -86,7 +86,7 @@ func (d *tagsDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		}
 		var listResp listTagsResponse
 		
-		path := fmt.Sprintf("/tags/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/tags?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tags, got error: %s", err))

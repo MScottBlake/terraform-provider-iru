@@ -76,7 +76,7 @@ func (d *prismCertificatesDataSource) Read(ctx context.Context, req datasource.R
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/certificates/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/certificates?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism certificates, got error: %s", err))

@@ -82,7 +82,7 @@ func (d *prismGatekeeperXProtectDataSource) Read(ctx context.Context, req dataso
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/gatekeeper_and_xprotect/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/gatekeeper_and_xprotect?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism gatekeeper_xprotect, got error: %s", err))

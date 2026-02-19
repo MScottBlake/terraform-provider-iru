@@ -78,7 +78,7 @@ func (d *prismKernelExtensionsDataSource) Read(ctx context.Context, req datasour
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/kernel_extensions/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/kernel_extensions?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism kernel_extensions, got error: %s", err))

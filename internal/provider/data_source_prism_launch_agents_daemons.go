@@ -78,7 +78,7 @@ func (d *prismLaunchAgentsDaemonsDataSource) Read(ctx context.Context, req datas
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/launch_agents_and_daemons/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/launch_agents_and_daemons?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism launch_agents_daemons, got error: %s", err))

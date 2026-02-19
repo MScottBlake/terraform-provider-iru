@@ -8,6 +8,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/list"
+	listschema "github.com/hashicorp/terraform-plugin-framework/list/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,7 +28,7 @@ func (r *deviceListResource) Metadata(ctx context.Context, req resource.Metadata
 	resp.TypeName = req.ProviderTypeName + "_device"
 }
 
-func (r *deviceListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
+func (r *deviceListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Kandji Device resources.",	}
 }
 
 func (r *deviceListResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

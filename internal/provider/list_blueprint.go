@@ -8,6 +8,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/list"
+	listschema "github.com/hashicorp/terraform-plugin-framework/list/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,7 +28,7 @@ func (r *blueprintListResource) Metadata(ctx context.Context, req resource.Metad
 	resp.TypeName = req.ProviderTypeName + "_blueprint"
 }
 
-func (r *blueprintListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
+func (r *blueprintListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Kandji Blueprint resources.",	}
 }
 
 func (r *blueprintListResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

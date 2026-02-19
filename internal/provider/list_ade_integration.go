@@ -8,6 +8,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/list"
+	listschema "github.com/hashicorp/terraform-plugin-framework/list/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,7 +28,10 @@ func (r *adeIntegrationListResource) Metadata(ctx context.Context, req resource.
 	resp.TypeName = req.ProviderTypeName + "_ade_integration"
 }
 
-func (r *adeIntegrationListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
+func (r *adeIntegrationListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Kandji Ade Integration resources.",	}
+	resp.Schema = listschema.Schema{
+		MarkdownDescription: "Lists Kandji ADE Integrations.",
+	}
 }
 
 func (r *adeIntegrationListResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

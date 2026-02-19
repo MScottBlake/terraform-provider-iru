@@ -13,6 +13,7 @@ func TestAccLicensingDataSource(t *testing.T) {
 			{
 				Config: `data "iru_licensing" "test" {}`,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttrSet("data.iru_licensing.test", "id"),
 					resource.TestCheckResourceAttrSet("data.iru_licensing.test", "max_devices"),
 				),
 			},

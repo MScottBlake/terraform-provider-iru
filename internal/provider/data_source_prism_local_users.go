@@ -86,7 +86,7 @@ func (d *prismLocalUsersDataSource) Read(ctx context.Context, req datasource.Rea
 		}
 		var listResp prismResponse
 		
-		path := fmt.Sprintf("/prism/local_users/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/prism/local_users?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read prism local_users, got error: %s", err))

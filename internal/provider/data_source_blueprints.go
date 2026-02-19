@@ -21,6 +21,7 @@ type blueprintsDataSource struct {
 }
 
 type blueprintsDataSourceModel struct {
+	ID         types.String                 `tfsdk:"id"`
 	Blueprints []blueprintDataSourceModel `tfsdk:"blueprints"`
 }
 
@@ -41,6 +42,9 @@ func (d *blueprintsDataSource) Schema(ctx context.Context, req datasource.Schema
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "List all blueprints in the Kandji instance.",
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+			},
 			"blueprints": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
@@ -108,7 +112,7 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		}
 		var listResp listBlueprintsResponse
 		
-		path := fmt.Sprintf("/blueprints/?limit=%d&offset=%d", limit, offset)
+		path := fmt.Sprintf("/blueprints?limit=%d&offset=%d", limit, offset)
 		err := d.client.DoRequest(ctx, "GET", path, nil, &listResp)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read blueprints, got error: %s", err))
@@ -133,6 +137,8 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			EnrollmentCode: types.StringValue(blueprint.EnrollmentCode.Code),
 		})
 	}
+
+	data.ID = types.StringValue("blueprints")
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
