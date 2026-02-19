@@ -21,9 +21,9 @@ type prismCountDataSource struct {
 }
 
 type prismCountDataSourceModel struct {
-	ID       types.String `tfsdk:"id"`
-	Category types.String `tfsdk:"category"`
-	Count    types.Int64  `tfsdk:"count"`
+	ID         types.String `tfsdk:"id"`
+	Category   types.String `tfsdk:"category"`
+	TotalCount types.Int64  `tfsdk:"total_count"`
 }
 
 func (d *prismCountDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
@@ -41,7 +41,7 @@ func (d *prismCountDataSource) Schema(ctx context.Context, req datasource.Schema
 				Required:            true,
 				MarkdownDescription: "The Prism category (e.g., apps, device_information).",
 			},
-			"count": schema.Int64Attribute{
+			"total_count": schema.Int64Attribute{
 				Computed: true,
 			},
 		},
@@ -70,7 +70,7 @@ func (d *prismCountDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 
 	data.ID = types.StringValue("prism_count_" + data.Category.ValueString())
-	data.Count = types.Int64Value(int64(response.Count))
+	data.TotalCount = types.Int64Value(int64(response.Count))
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }

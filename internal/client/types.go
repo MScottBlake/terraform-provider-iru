@@ -42,16 +42,60 @@ type ADEIntegration struct {
 
 // Device represents a Kandji Device.
 type Device struct {
-	ID                string `json:"device_id,omitempty"` // Note: API might return device_id or id. Check docs. Docs said id. But commonly it's device_id in list? I'll use ID alias if needed.
-	DeviceName        string `json:"device_name,omitempty"`
-	AssetTag          string `json:"asset_tag,omitempty"`
-	SerialNumber      string `json:"serial_number,omitempty"`
-	Model             string `json:"model,omitempty"`
-	OSVersion         string `json:"os_version,omitempty"`
-	BlueprintID       string `json:"blueprint_id,omitempty"`
-	UserID            string `json:"user_id,omitempty"`
-	Platform          string `json:"platform,omitempty"`
-	LastCheckIn       string `json:"last_check_in,omitempty"`
+	ID           string `json:"id,omitempty"`
+	DeviceName   string `json:"device_name,omitempty"`
+	AssetTag     string `json:"asset_tag,omitempty"`
+	SerialNumber string `json:"serial_number,omitempty"`
+	Model        string `json:"model,omitempty"`
+	OSVersion    string `json:"os_version,omitempty"`
+	BlueprintID  string `json:"blueprint_id,omitempty"`
+	UserID       string `json:"user_id,omitempty"`
+	Platform     string `json:"platform,omitempty"`
+	LastCheckIn  string `json:"last_check_in,omitempty"`
+}
+
+// DeviceNote represents a note assigned to a device.
+type DeviceNote struct {
+	ID        string `json:"note_id,omitempty"`
+	CreatedAt string `json:"created_at,omitempty"`
+	UpdatedAt string `json:"updated_at,omitempty"`
+	Author    string `json:"author,omitempty"`
+	Content   string `json:"content"`
+}
+
+// DeviceDetails represents the full details of a device.
+type DeviceDetails struct {
+	General struct {
+		DeviceID     string `json:"device_id"`
+		DeviceName   string `json:"device_name"`
+		Model        string `json:"model"`
+		Platform     string `json:"platform"`
+		OSVersion    string `json:"os_version"`
+		SerialNumber string `json:"serial_number"`
+		AssetTag     string `json:"asset_tag"`
+		BlueprintID  string `json:"blueprint_uuid"`
+	} `json:"general"`
+	MDM struct {
+		Enabled      string   `json:"mdm_enabled"`
+		Supervised   string   `json:"supervised"`
+		LastCheckIn  string   `json:"last_check_in"`
+		EnabledUsers []string `json:"mdm_enabled_user"`
+	} `json:"mdm"`
+}
+
+// LibraryItemActivity represents activity for a library item.
+type LibraryItemActivity struct {
+	DeviceID     string `json:"device_id"`
+	DeviceName   string `json:"device_name"`
+	Status       string `json:"status"`
+	ActivityTime string `json:"activity_time"`
+}
+
+// LibraryItemStatus represents status for a library item on a device.
+type LibraryItemStatus struct {
+	DeviceID   string `json:"device_id"`
+	DeviceName string `json:"device_name"`
+	Status     string `json:"status"`
 }
 
 // Tag represents a Kandji Tag.

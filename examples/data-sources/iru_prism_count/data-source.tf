@@ -3,5 +3,5 @@ data "iru_prism_count" "apps" {
 }
 
 output "total_apps" {
-  value = data.iru_prism_count.apps.count
+  value = data.iru_prism_count.apps.total_count
 }
