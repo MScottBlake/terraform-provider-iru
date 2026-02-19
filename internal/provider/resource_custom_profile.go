@@ -9,6 +9,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -17,6 +18,7 @@ import (
 
 var _ resource.Resource = &customProfileResource{}
 var _ resource.ResourceWithImportState = &customProfileResource{}
+var _ resource.ResourceWithIdentity = &customProfileResource{}
 
 func NewCustomProfileResource() resource.Resource {
 	return &customProfileResource{}
@@ -39,6 +41,10 @@ type customProfileResourceModel struct {
 	RunsOnVision  types.Bool   `tfsdk:"runs_on_vision"`
 }
 
+type customProfileResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
+}
+
 func (r *customProfileResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_custom_profile"
 }
@@ -49,7 +55,7 @@ func (r *customProfileResource) Schema(ctx context.Context, req resource.SchemaR
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the Custom Profile.",
+				Description: "The unique identifier for the Custom Profile.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -95,6 +101,17 @@ func (r *customProfileResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional:            true,
 				Computed:            true,
 				MarkdownDescription: "Whether the profile runs on visionOS.",
+			},
+		},
+	}
+}
+
+func (r *customProfileResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description: "The unique identifier for the Custom Profile.",
 			},
 		},
 	}
@@ -147,6 +164,11 @@ func (r *customProfileResource) Create(ctx context.Context, req resource.CreateR
 	r.updateModelWithResponse(&data, &profileResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := customProfileResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *customProfileResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -157,8 +179,19 @@ func (r *customProfileResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
+	var identity customProfileResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var profileResponse client.CustomProfile
-	err := r.client.DoRequest(ctx, "GET", "/library/custom-profiles/"+data.ID.ValueString(), nil, &profileResponse)
+	err := r.client.DoRequest(ctx, "GET", "/library/custom-profiles/"+id, nil, &profileResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read custom profile, got error: %s", err))
 		return
@@ -167,6 +200,7 @@ func (r *customProfileResource) Read(ctx context.Context, req resource.ReadReque
 	r.updateModelWithResponse(&data, &profileResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *customProfileResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -205,6 +239,11 @@ func (r *customProfileResource) Update(ctx context.Context, req resource.UpdateR
 	r.updateModelWithResponse(&plan, &profileResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	identity := customProfileResourceIdentityModel{
+		ID: plan.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *customProfileResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

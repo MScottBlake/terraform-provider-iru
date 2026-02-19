@@ -130,7 +130,7 @@ func (d *blueprintsDataSource) Read(ctx context.Context, req datasource.ReadRequ
 			Description:    types.StringValue(blueprint.Description),
 			Icon:           types.StringValue(blueprint.Icon),
 			Color:          types.StringValue(blueprint.Color),
-			EnrollmentCode: types.StringValue(blueprint.EnrollmentCode),
+			EnrollmentCode: types.StringValue(blueprint.EnrollmentCode.Code),
 		})
 	}
 

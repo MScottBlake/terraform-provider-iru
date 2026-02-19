@@ -2,13 +2,18 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"slices"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 var _ list.ListResource = &inHouseAppListResource{}
+var _ list.ListResourceWithConfigure = &inHouseAppListResource{}
 
 func NewInHouseAppListResource() list.ListResource {
 	return &inHouseAppListResource{}
@@ -25,13 +30,60 @@ func (r *inHouseAppListResource) Metadata(ctx context.Context, req resource.Meta
 func (r *inHouseAppListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
 }
 
-func (r *inHouseAppListResource) Configure(ctx context.Context, req list.ConfigureRequest, resp *list.ConfigureResponse) {
+func (r *inHouseAppListResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*client.Client)
+
+	client, ok := req.ProviderData.(*client.Client)
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+		return
+	}
+
+	r.client = client
 }
 
 func (r *inHouseAppListResource) List(ctx context.Context, req list.ListRequest, resp *list.ListResultsStream) {
-	resp.Results = list.ListResultsStreamDiagnostics(nil)
+	var response struct {
+		Results []client.InHouseApp `json:"results"`
+	}
+	err := r.client.DoRequest(ctx, "GET", "/library/ipa-apps", nil, &response)
+	if err != nil {
+		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
+			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list in-house apps, got error: %v", err)),
+		})
+		return
+	}
+
+	results := make([]list.ListResult, 0, len(response.Results))
+	for _, app := range response.Results {
+		result := req.NewListResult(ctx)
+
+		identity := inHouseAppResourceIdentityModel{
+			ID: types.StringValue(app.ID),
+		}
+		result.Diagnostics.Append(result.Identity.Set(ctx, &identity)...)
+
+		if req.IncludeResource {
+			resourceModel := inHouseAppResourceModel{
+				ID:           types.StringValue(app.ID),
+				Name:         types.StringValue(app.Name),
+				FileKey:      types.StringValue(app.FileKey),
+				RunsOnIPhone: types.BoolValue(app.RunsOnIPhone),
+				RunsOnIPad:   types.BoolValue(app.RunsOnIPad),
+				RunsOnTV:     types.BoolValue(app.RunsOnTV),
+				Active:       types.BoolValue(app.Active),
+			}
+			result.Diagnostics.Append(result.Resource.Set(ctx, &resourceModel)...)
+		}
+
+		result.DisplayName = app.Name
+		results = append(results, result)
+	}
+
+	resp.Results = slices.Values(results)
 }

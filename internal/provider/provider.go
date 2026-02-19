@@ -90,6 +90,9 @@ func (p *IruProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	resp.DataSourceData = c
 	resp.ResourceData = c
+	resp.ListResourceData = c
+	resp.ActionData = c
+	resp.EphemeralResourceData = c
 }
 
 func (p *IruProvider) Resources(ctx context.Context) []func() resource.Resource {

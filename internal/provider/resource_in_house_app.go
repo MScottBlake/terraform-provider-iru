@@ -7,6 +7,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -15,6 +16,7 @@ import (
 
 var _ resource.Resource = &inHouseAppResource{}
 var _ resource.ResourceWithImportState = &inHouseAppResource{}
+var _ resource.ResourceWithIdentity = &inHouseAppResource{}
 
 func NewInHouseAppResource() resource.Resource {
 	return &inHouseAppResource{}
@@ -34,6 +36,10 @@ type inHouseAppResourceModel struct {
 	Active       types.Bool   `tfsdk:"active"`
 }
 
+type inHouseAppResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
+}
+
 func (r *inHouseAppResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_in_house_app"
 }
@@ -44,7 +50,7 @@ func (r *inHouseAppResource) Schema(ctx context.Context, req resource.SchemaRequ
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the In-House App.",
+				Description: "The unique identifier for the In-House App.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -77,6 +83,17 @@ func (r *inHouseAppResource) Schema(ctx context.Context, req resource.SchemaRequ
 	}
 }
 
+func (r *inHouseAppResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description:       "The unique identifier for the In-House App.",
+			},
+		},
+	}
+}
+
 func (r *inHouseAppResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
@@ -101,6 +118,11 @@ func (r *inHouseAppResource) Create(ctx context.Context, req resource.CreateRequ
 
 	r.mapFromClient(&data, &appResponse)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := inHouseAppResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *inHouseAppResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -110,8 +132,19 @@ func (r *inHouseAppResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
+	var identity inHouseAppResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var appResponse client.InHouseApp
-	err := r.client.DoRequest(ctx, "GET", "/library/ipa-apps/"+data.ID.ValueString(), nil, &appResponse)
+	err := r.client.DoRequest(ctx, "GET", "/library/ipa-apps/"+id, nil, &appResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read in-house app, got error: %s", err))
 		return
@@ -119,6 +152,7 @@ func (r *inHouseAppResource) Read(ctx context.Context, req resource.ReadRequest,
 
 	r.mapFromClient(&data, &appResponse)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *inHouseAppResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -138,6 +172,11 @@ func (r *inHouseAppResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	r.mapFromClient(&data, &appResponse)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := inHouseAppResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *inHouseAppResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

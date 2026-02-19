@@ -8,6 +8,7 @@ import (
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -16,6 +17,7 @@ import (
 
 var _ resource.Resource = &adeIntegrationResource{}
 var _ resource.ResourceWithImportState = &adeIntegrationResource{}
+var _ resource.ResourceWithIdentity = &adeIntegrationResource{}
 
 func NewADEIntegrationResource() resource.Resource {
 	return &adeIntegrationResource{}
@@ -33,6 +35,10 @@ type adeIntegrationResourceModel struct {
 	MDMServerTokenFile types.String `tfsdk:"mdm_server_token_file"`
 }
 
+type adeIntegrationResourceIdentityModel struct {
+	ID types.String `tfsdk:"id"`
+}
+
 func (r *adeIntegrationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_ade_integration"
 }
@@ -43,7 +49,7 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The unique identifier for the ADE Integration.",
+				Description: "The unique identifier for the ADE Integration.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -64,6 +70,17 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 				Required:            true,
 				Sensitive:           true,
 				MarkdownDescription: "The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.",
+			},
+		},
+	}
+}
+
+func (r *adeIntegrationResource) IdentitySchema(ctx context.Context, req resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+				Description: "The unique identifier for the ADE Integration.",
 			},
 		},
 	}
@@ -109,15 +126,14 @@ func (r *adeIntegrationResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	data.ID = types.StringValue(adeResponse.ID)
-	// Response contains blueprint object, but we store blueprint_id
-	if adeResponse.Blueprint != nil {
-		data.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-	}
-	data.Phone = types.StringValue(adeResponse.Phone)
-	data.Email = types.StringValue(adeResponse.Email)
+	r.updateModelWithADEIntegration(&data, &adeResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+
+	identity := adeIntegrationResourceIdentityModel{
+		ID: data.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *adeIntegrationResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -128,23 +144,28 @@ func (r *adeIntegrationResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
+	var identity adeIntegrationResourceIdentityModel
+	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
 	var adeResponse client.ADEIntegration
-	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/"+data.ID.ValueString(), nil, &adeResponse)
+	err := r.client.DoRequest(ctx, "GET", "/integrations/apple/ade/"+id, nil, &adeResponse)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read ADE integration, got error: %s", err))
 		return
 	}
 
-	if adeResponse.Blueprint != nil {
-		data.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-	}
-	data.Phone = types.StringValue(adeResponse.Phone)
-	data.Email = types.StringValue(adeResponse.Email)
-	// MDMServerTokenFile is not returned by API, keep from state (handled by Terraform automatically if not set here?)
-	// Actually, if we don't set it, it might show as null if we overwrite `data` completely.
-	// But we are updating `data` fields. `data.MDMServerTokenFile` preserves previous value if we don't touch it.
+	r.updateModelWithADEIntegration(&data, &adeResponse)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *adeIntegrationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -172,11 +193,7 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 			return
 		}
 		
-		if adeResponse.Blueprint != nil {
-			plan.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-		}
-		plan.Phone = types.StringValue(adeResponse.Phone)
-		plan.Email = types.StringValue(adeResponse.Email)
+		r.updateModelWithADEIntegration(&plan, &adeResponse)
 	} else {
 		// Normal update
 		updateRequest := client.ADEIntegration{
@@ -192,14 +209,15 @@ func (r *adeIntegrationResource) Update(ctx context.Context, req resource.Update
 			return
 		}
 
-		if adeResponse.Blueprint != nil {
-			plan.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
-		}
-		plan.Phone = types.StringValue(adeResponse.Phone)
-		plan.Email = types.StringValue(adeResponse.Email)
+		r.updateModelWithADEIntegration(&plan, &adeResponse)
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+
+	identity := adeIntegrationResourceIdentityModel{
+		ID: plan.ID,
+	}
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *adeIntegrationResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -219,4 +237,23 @@ func (r *adeIntegrationResource) Delete(ctx context.Context, req resource.Delete
 
 func (r *adeIntegrationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+func (r *adeIntegrationResource) updateModelWithADEIntegration(data *adeIntegrationResourceModel, adeResponse *client.ADEIntegration) {
+	data.ID = types.StringValue(adeResponse.ID)
+	if adeResponse.Blueprint != nil {
+		data.BlueprintID = types.StringValue(adeResponse.Blueprint.ID)
+	}
+
+	phone := adeResponse.Phone
+	if phone == "" {
+		phone = adeResponse.Defaults.Phone
+	}
+	email := adeResponse.Email
+	if email == "" {
+		email = adeResponse.Defaults.Email
+	}
+
+	data.Phone = types.StringValue(phone)
+	data.Email = types.StringValue(email)
 }

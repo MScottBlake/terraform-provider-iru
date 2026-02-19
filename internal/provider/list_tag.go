@@ -2,13 +2,18 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"slices"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 var _ list.ListResource = &tagListResource{}
+var _ list.ListResourceWithConfigure = &tagListResource{}
 
 func NewTagListResource() list.ListResource {
 	return &tagListResource{}
@@ -25,13 +30,55 @@ func (r *tagListResource) Metadata(ctx context.Context, req resource.MetadataReq
 func (r *tagListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
 }
 
-func (r *tagListResource) Configure(ctx context.Context, req list.ConfigureRequest, resp *list.ConfigureResponse) {
+func (r *tagListResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
-	r.client = req.ProviderData.(*client.Client)
+
+	client, ok := req.ProviderData.(*client.Client)
+	if !ok {
+		resp.Diagnostics.AddError(
+			"Unexpected Resource Configure Type",
+			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+		)
+		return
+	}
+
+	r.client = client
 }
 
 func (r *tagListResource) List(ctx context.Context, req list.ListRequest, resp *list.ListResultsStream) {
-	resp.Results = list.ListResultsStreamDiagnostics(nil)
+	var response struct {
+		Results []client.Tag `json:"results"`
+	}
+	err := r.client.DoRequest(ctx, "GET", "/tags", nil, &response)
+	if err != nil {
+		resp.Results = list.ListResultsStreamDiagnostics(diag.Diagnostics{
+			diag.NewErrorDiagnostic("Client Error", fmt.Sprintf("Unable to list tags, got error: %v", err)),
+		})
+		return
+	}
+
+	results := make([]list.ListResult, 0, len(response.Results))
+	for _, tag := range response.Results {
+		result := req.NewListResult(ctx)
+
+		identity := tagResourceIdentityModel{
+			ID: types.StringValue(tag.ID),
+		}
+		result.Diagnostics.Append(result.Identity.Set(ctx, &identity)...)
+
+		if req.IncludeResource {
+			resourceModel := tagResourceModel{
+				ID:   types.StringValue(tag.ID),
+				Name: types.StringValue(tag.Name),
+			}
+			result.Diagnostics.Append(result.Resource.Set(ctx, &resourceModel)...)
+		}
+
+		result.DisplayName = tag.Name
+		results = append(results, result)
+	}
+
+	resp.Results = slices.Values(results)
 }

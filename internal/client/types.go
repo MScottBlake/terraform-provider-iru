@@ -7,16 +7,23 @@ type Blueprint struct {
 	Description    string `json:"description,omitempty"`
 	Icon           string `json:"icon,omitempty"`
 	Color          string `json:"color,omitempty"`
-	EnrollmentCode string `json:"enrollment_code,omitempty"`
+	EnrollmentCode struct {
+		Code     string `json:"code"`
+		IsActive bool   `json:"is_active"`
+	} `json:"enrollment_code,omitempty"`
 }
 
 // ADEIntegration represents a Kandji ADE Integration.
 type ADEIntegration struct {
 	ID          string     `json:"id,omitempty"`
 	BlueprintID string     `json:"blueprint_id,omitempty"` // Used for Update input
-	Phone       string     `json:"phone"`
-	Email       string     `json:"email"`
-	Blueprint   *Blueprint `json:"blueprint,omitempty"` // From response
+	Phone       string     `json:"phone,omitempty"`        // Top level in some cases?
+	Email       string     `json:"email,omitempty"`        // Top level in some cases?
+	Blueprint   *Blueprint `json:"blueprint,omitempty"`    // From response
+	Defaults    struct {
+		Phone string `json:"phone"`
+		Email string `json:"email"`
+	} `json:"defaults,omitempty"`
 }
 
 // Device represents a Kandji Device.
