@@ -66,18 +66,22 @@ func (r *inHouseAppResource) Schema(ctx context.Context, req resource.SchemaRequ
 			"runs_on_iphone": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether the app can be installed on iPhone devices.",
 			},
 			"runs_on_ipad": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether the app can be installed on iPad devices.",
 			},
 			"runs_on_tv": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether the app can be installed on Apple TV devices.",
 			},
 			"active": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether this In-House App is active and available for installation.",
 			},
 		},
 	}

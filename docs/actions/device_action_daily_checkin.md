@@ -23,4 +23,4 @@ action "iru_device_action_daily_checkin" "example" {
 
 ### Required
 
-- `device_id` (String)
+- `device_id` (String) The unique identifier for the Device.

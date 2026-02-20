@@ -33,7 +33,8 @@ func (a *deviceDailyCheckinAction) Schema(ctx context.Context, req action.Schema
 		MarkdownDescription: "Initiates a daily check-in for a device.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
-				Required: true,
+				Required:            true,
+				MarkdownDescription: "The unique identifier for the Device.",
 			},
 		},
 	}

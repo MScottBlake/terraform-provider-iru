@@ -24,5 +24,5 @@ action "iru_device_action_unlock_account" "example" {
 
 ### Required
 
-- `device_id` (String)
+- `device_id` (String) The unique identifier for the Device.
 - `username` (String) The local username to unlock.

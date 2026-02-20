@@ -39,16 +39,16 @@ resource "iru_custom_script" "example" {
 
 ### Required
 
-- `execution_frequency` (String) The execution frequency. Options: `once`, `every_15_min`, `every_day`, `no_enforcement`.
+- `execution_frequency` (String) The frequency at which the script is enforced. Options: `once` (runs once and never again), `every_15_min`, `every_day`, `no_enforcement` (manual run only).
 - `name` (String) The name of the Custom Script.
-- `script` (String) The content of the main script. Usually starts with a shebang (e.g., `#!/bin/zsh`).
+- `script` (String) The shell or zsh script content. Must include a valid shebang (e.g., `#!/bin/zsh`).
 
 ### Optional
 
 - `active` (Boolean) Whether this library item is active.
-- `remediation_script` (String) The content of the remediation script. This runs if the main script exits with a non-zero status.
-- `restart` (Boolean) Whether to restart the computer after the script successfully executes.
-- `show_in_self_service` (Boolean) Whether to show the script in Self Service.
+- `remediation_script` (String) An optional script that runs only if the primary script fails (exits non-zero).
+- `restart` (Boolean) Whether to restart the computer if the script execution is successful. Use with caution as this may disrupt users.
+- `show_in_self_service` (Boolean) Whether to make this script available for users to run manually in the Self Service app.
 
 ### Read-Only
 

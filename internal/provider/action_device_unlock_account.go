@@ -34,7 +34,8 @@ func (a *deviceUnlockAccountAction) Schema(ctx context.Context, req action.Schem
 		MarkdownDescription: "Unlocks a specific user account on a device. Available for Mac.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
-				Required: true,
+				Required:            true,
+				MarkdownDescription: "The unique identifier for the Device.",
 			},
 			"username": schema.StringAttribute{
 				Required:            true,

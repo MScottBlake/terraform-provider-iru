@@ -65,27 +65,27 @@ func (d *devicesDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 			},
 			"serial_number": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Filter by serial number.",
+				MarkdownDescription: "Filter by serial number. Supports partial matches.",
 			},
 			"asset_tag": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Filter by asset tag.",
+				MarkdownDescription: "Filter by asset tag. Supports partial matches.",
 			},
 			"device_name": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Filter by device name.",
+				MarkdownDescription: "Filter by device name. Supports partial matches.",
 			},
 			"platform": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Filter by platform.",
+				MarkdownDescription: "Filter by platform. Options: `Mac`, `iPad`, `iPhone`, `AppleTV`, `Vision`.",
 			},
 			"user_id": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Filter by user ID.",
+				MarkdownDescription: "Filter by the UUID of the assigned user.",
 			},
 			"blueprint_id": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "Filter by blueprint ID.",
+				MarkdownDescription: "Filter by the UUID of the assigned blueprint.",
 			},
 			"devices": schema.ListNestedAttribute{
 				Computed: true,

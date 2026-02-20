@@ -91,30 +91,37 @@ func (r *customAppResource) Schema(ctx context.Context, req resource.SchemaReque
 			"preinstall_script": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Script content to run before the application is installed.",
 			},
 			"postinstall_script": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Script content to run after the application is installed.",
 			},
 			"show_in_self_service": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether to display this app in the Self Service catalog.",
 			},
 			"self_service_category_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "The UUID of the Self Service category to display the app in. Required if `show_in_self_service` is `true`.",
 			},
 			"self_service_recommended": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether to flag this app as recommended in Self Service.",
 			},
 			"active": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether this Custom App is active and available for installation.",
 			},
 			"restart": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
+				MarkdownDescription: "Whether to prompt for or force a restart after successful installation.",
 			},
 		},
 	}

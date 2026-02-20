@@ -67,26 +67,26 @@ func (r *customScriptResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"execution_frequency": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The execution frequency. Options: `once`, `every_15_min`, `every_day`, `no_enforcement`.",
+				MarkdownDescription: "The frequency at which the script is enforced. Options: `once` (runs once and never again), `every_15_min`, `every_day`, `no_enforcement` (manual run only).",
 			},
 			"restart": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether to restart the computer after the script successfully executes.",
+				MarkdownDescription: "Whether to restart the computer if the script execution is successful. Use with caution as this may disrupt users.",
 			},
 			"script": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The content of the main script. Usually starts with a shebang (e.g., `#!/bin/zsh`).",
+				MarkdownDescription: "The shell or zsh script content. Must include a valid shebang (e.g., `#!/bin/zsh`).",
 			},
 			"remediation_script": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The content of the remediation script. This runs if the main script exits with a non-zero status.",
+				MarkdownDescription: "An optional script that runs only if the primary script fails (exits non-zero).",
 			},
 			"show_in_self_service": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether to show the script in Self Service.",
+				MarkdownDescription: "Whether to make this script available for users to run manually in the Self Service app.",
 			},
 		},
 	}

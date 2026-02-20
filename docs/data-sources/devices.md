@@ -25,14 +25,14 @@ output "total_devices" {
 
 ### Optional
 
-- `asset_tag` (String) Filter by asset tag.
-- `blueprint_id` (String) Filter by blueprint ID.
-- `device_name` (String) Filter by device name.
+- `asset_tag` (String) Filter by asset tag. Supports partial matches.
+- `blueprint_id` (String) Filter by the UUID of the assigned blueprint.
+- `device_name` (String) Filter by device name. Supports partial matches.
 - `limit` (Number) Maximum number of results to return.
 - `offset` (Number) Number of results to skip.
-- `platform` (String) Filter by platform.
-- `serial_number` (String) Filter by serial number.
-- `user_id` (String) Filter by user ID.
+- `platform` (String) Filter by platform. Options: `Mac`, `iPad`, `iPhone`, `AppleTV`, `Vision`.
+- `serial_number` (String) Filter by serial number. Supports partial matches.
+- `user_id` (String) Filter by the UUID of the assigned user.
 
 ### Read-Only
 

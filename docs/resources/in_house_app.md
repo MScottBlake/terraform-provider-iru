@@ -32,10 +32,10 @@ resource "iru_in_house_app" "example" {
 
 ### Optional
 
-- `active` (Boolean)
-- `runs_on_ipad` (Boolean)
-- `runs_on_iphone` (Boolean)
-- `runs_on_tv` (Boolean)
+- `active` (Boolean) Whether this In-House App is active and available for installation.
+- `runs_on_ipad` (Boolean) Whether the app can be installed on iPad devices.
+- `runs_on_iphone` (Boolean) Whether the app can be installed on iPhone devices.
+- `runs_on_tv` (Boolean) Whether the app can be installed on Apple TV devices.
 
 ### Read-Only
 

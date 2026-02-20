@@ -42,14 +42,14 @@ resource "iru_custom_app" "example" {
 
 ### Optional
 
-- `active` (Boolean)
+- `active` (Boolean) Whether this Custom App is active and available for installation.
 - `audit_script` (String) Required for install_enforcement=continuously_enforce.
-- `postinstall_script` (String)
-- `preinstall_script` (String)
-- `restart` (Boolean)
-- `self_service_category_id` (String)
-- `self_service_recommended` (Boolean)
-- `show_in_self_service` (Boolean)
+- `postinstall_script` (String) Script content to run after the application is installed.
+- `preinstall_script` (String) Script content to run before the application is installed.
+- `restart` (Boolean) Whether to prompt for or force a restart after successful installation.
+- `self_service_category_id` (String) The UUID of the Self Service category to display the app in. Required if `show_in_self_service` is `true`.
+- `self_service_recommended` (Boolean) Whether to flag this app as recommended in Self Service.
+- `show_in_self_service` (Boolean) Whether to display this app in the Self Service catalog.
 - `unzip_location` (String) Required for install_type=zip.
 
 ### Read-Only
