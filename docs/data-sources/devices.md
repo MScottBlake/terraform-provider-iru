@@ -3,12 +3,12 @@
 page_title: "iru_devices Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all devices in the Kandji instance.
+  List all devices in the Iru instance.
 ---
 
 # iru_devices (Data Source)
 
-List all devices in the Kandji instance.
+List all devices in the Iru instance.
 
 ## Example Usage
 

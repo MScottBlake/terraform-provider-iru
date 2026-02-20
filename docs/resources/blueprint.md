@@ -3,12 +3,12 @@
 page_title: "iru_blueprint Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji Blueprint.
+  Manages an Iru Blueprint.
 ---
 
 # iru_blueprint (Resource)
 
-Manages a Kandji Blueprint.
+Manages an Iru Blueprint.
 
 ## Example Usage
 

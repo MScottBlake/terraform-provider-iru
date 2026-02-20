@@ -3,12 +3,12 @@
 page_title: "iru_tag List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Lists Kandji Tag resources.
+  Lists Iru Tag resources.
 ---
 
 # iru_tag (List Resource)
 
-Lists Kandji Tag resources.
+Lists Iru Tag resources.
 
 ## Example Usage
 

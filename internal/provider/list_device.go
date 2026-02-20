@@ -28,7 +28,7 @@ func (r *deviceListResource) Metadata(ctx context.Context, req resource.Metadata
 	resp.TypeName = req.ProviderTypeName + "_device"
 }
 
-func (r *deviceListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Kandji Device resources.",	}
+func (r *deviceListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Iru Device resources.",	}
 }
 
 func (r *deviceListResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

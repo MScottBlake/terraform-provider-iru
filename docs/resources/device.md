@@ -3,12 +3,12 @@
 page_title: "iru_device Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji Device. Note: Devices cannot be created via Terraform, only imported and managed.
+  Manages an Iru Device. Note: Devices cannot be created via Terraform, only imported and managed.
 ---
 
 # iru_device (Resource)
 
-Manages a Kandji Device. Note: Devices cannot be created via Terraform, only imported and managed.
+Manages an Iru Device. Note: Devices cannot be created via Terraform, only imported and managed.
 
 ## Example Usage
 

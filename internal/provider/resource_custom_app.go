@@ -53,7 +53,7 @@ func (r *customAppResource) Metadata(ctx context.Context, req resource.MetadataR
 
 func (r *customAppResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji Custom App library item (PKG, ZIP, or IMG). This resource defines the installation and enforcement settings for custom software. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.",
+		MarkdownDescription: "Manages an Iru Custom App library item (PKG, ZIP, or IMG). This resource defines the installation and enforcement settings for custom software. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

@@ -57,7 +57,7 @@ func (d *adeDevicesDataSource) Metadata(ctx context.Context, req datasource.Meta
 
 func (d *adeDevicesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List all ADE devices in the Kandji instance.",
+		MarkdownDescription: "List all ADE devices in the Iru instance.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

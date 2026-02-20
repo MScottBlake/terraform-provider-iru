@@ -3,12 +3,12 @@
 page_title: "iru_users Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all users in the Kandji instance.
+  List all users in the Iru instance.
 ---
 
 # iru_users (Data Source)
 
-List all users in the Kandji instance.
+List all users in the Iru instance.
 
 ## Example Usage
 

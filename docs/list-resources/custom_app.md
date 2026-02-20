@@ -3,12 +3,12 @@
 page_title: "iru_custom_app List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Lists Kandji Custom App resources.
+  Lists Iru Custom App resources.
 ---
 
 # iru_custom_app (List Resource)
 
-Lists Kandji Custom App resources.
+Lists Iru Custom App resources.
 
 ## Example Usage
 

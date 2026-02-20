@@ -30,7 +30,7 @@ func (r *adeDeviceListResource) Metadata(ctx context.Context, req resource.Metad
 
 func (r *adeDeviceListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {
 	resp.Schema = listschema.Schema{
-		MarkdownDescription: "Lists Kandji ADE Device resources.",
+		MarkdownDescription: "Lists Iru ADE Device resources.",
 	}
 }
 

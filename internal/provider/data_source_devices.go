@@ -50,7 +50,7 @@ func (d *devicesDataSource) Metadata(ctx context.Context, req datasource.Metadat
 
 func (d *devicesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List all devices in the Kandji instance.",
+		MarkdownDescription: "List all devices in the Iru instance.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

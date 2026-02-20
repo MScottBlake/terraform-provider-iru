@@ -51,7 +51,7 @@ func (r *customProfileResource) Metadata(ctx context.Context, req resource.Metad
 
 func (r *customProfileResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji Custom Profile library item.",
+		MarkdownDescription: "Manages an Iru Custom Profile library item.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

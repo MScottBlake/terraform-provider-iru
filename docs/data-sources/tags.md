@@ -3,12 +3,12 @@
 page_title: "iru_tags Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all tags in the Kandji instance.
+  List all tags in the Iru instance.
 ---
 
 # iru_tags (Data Source)
 
-List all tags in the Kandji instance.
+List all tags in the Iru instance.
 
 ## Example Usage
 

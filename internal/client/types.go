@@ -1,6 +1,6 @@
 package client
 
-// Blueprint represents a Kandji Blueprint.
+// Blueprint represents an Iru Blueprint.
 type Blueprint struct {
 	ID             string `json:"id,omitempty"`
 	Name           string `json:"name"`
@@ -18,7 +18,7 @@ type Blueprint struct {
 	} `json:"source,omitempty"`
 }
 
-// ADEIntegration represents a Kandji ADE Integration.
+// ADEIntegration represents an Iru ADE Integration.
 type ADEIntegration struct {
 	ID                  string     `json:"id,omitempty"`
 	BlueprintID         string     `json:"blueprint_id,omitempty"` // Used for Update input
@@ -40,7 +40,7 @@ type ADEIntegration struct {
 	} `json:"defaults,omitempty"`
 }
 
-// Device represents a Kandji Device.
+// Device represents an Iru Device.
 type Device struct {
 	ID           string `json:"id,omitempty"`
 	DeviceName   string `json:"device_name,omitempty"`
@@ -98,13 +98,13 @@ type LibraryItemStatus struct {
 	Status     string `json:"status"`
 }
 
-// Tag represents a Kandji Tag.
+// Tag represents an Iru Tag.
 type Tag struct {
 	ID   string `json:"id,omitempty"`
 	Name string `json:"name"`
 }
 
-// CustomScript represents a Kandji Custom Script library item.
+// CustomScript represents an Iru Custom Script library item.
 type CustomScript struct {
 	ID                 string `json:"id,omitempty"`
 	Name               string `json:"name"`
@@ -116,7 +116,7 @@ type CustomScript struct {
 	ShowInSelfService  bool   `json:"show_in_self_service"`
 }
 
-// CustomProfile represents a Kandji Custom Profile library item.
+// CustomProfile represents an Iru Custom Profile library item.
 type CustomProfile struct {
 	ID            string `json:"id,omitempty"`
 	Name          string `json:"name"`
@@ -130,7 +130,7 @@ type CustomProfile struct {
 	RunsOnVision  bool   `json:"runs_on_vision"`
 }
 
-// User represents a Kandji User.
+// User represents an Iru User.
 type User struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
@@ -184,7 +184,7 @@ type Vulnerability struct {
 	Software           []string `json:"software"`
 }
 
-// CustomApp represents a Kandji Custom App library item.
+// CustomApp represents an Iru Custom App library item.
 type CustomApp struct {
 	ID                     string `json:"id,omitempty"`
 	Name                   string `json:"name"`
@@ -202,7 +202,7 @@ type CustomApp struct {
 	Restart                bool   `json:"restart"`
 }
 
-// InHouseApp represents a Kandji In-House App library item (.ipa).
+// InHouseApp represents an Iru In-House App library item (.ipa).
 type InHouseApp struct {
 	ID           string `json:"id,omitempty"`
 	Name         string `json:"name"`
@@ -297,7 +297,7 @@ type BlueprintLibraryItem struct {
 	Name string `json:"name"`
 }
 
-// ADEDevice represents a Kandji ADE Device.
+// ADEDevice represents an Iru ADE Device.
 type ADEDevice struct {
 	ID            string `json:"device_id,omitempty"`
 	SerialNumber  string `json:"serial_number"`

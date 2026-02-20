@@ -30,7 +30,7 @@ func (a *deviceReinstallAgentAction) Metadata(ctx context.Context, req action.Me
 
 func (a *deviceReinstallAgentAction) Schema(ctx context.Context, req action.SchemaRequest, resp *action.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Reinstalls the Kandji Agent on macOS devices.",
+		MarkdownDescription: "Reinstalls the Iru Agent on macOS devices.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required: true,

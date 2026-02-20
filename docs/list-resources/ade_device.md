@@ -3,12 +3,12 @@
 page_title: "iru_ade_device List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Lists Kandji ADE Device resources.
+  Lists Iru ADE Device resources.
 ---
 
 # iru_ade_device (List Resource)
 
-Lists Kandji ADE Device resources.
+Lists Iru ADE Device resources.
 
 ## Example Usage
 

@@ -46,7 +46,7 @@ func (d *customScriptsDataSource) Metadata(ctx context.Context, req datasource.M
 
 func (d *customScriptsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List all custom scripts in the Kandji instance.",
+		MarkdownDescription: "List all custom scripts in the Iru instance.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

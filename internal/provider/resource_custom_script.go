@@ -47,7 +47,7 @@ func (r *customScriptResource) Metadata(ctx context.Context, req resource.Metada
 
 func (r *customScriptResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji Custom Script library item.",
+		MarkdownDescription: "Manages an Iru Custom Script library item.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

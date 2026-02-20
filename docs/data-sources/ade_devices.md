@@ -3,12 +3,12 @@
 page_title: "iru_ade_devices Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all ADE devices in the Kandji instance.
+  List all ADE devices in the Iru instance.
 ---
 
 # iru_ade_devices (Data Source)
 
-List all ADE devices in the Kandji instance.
+List all ADE devices in the Iru instance.
 
 ## Example Usage
 

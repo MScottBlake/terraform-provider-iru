@@ -3,12 +3,12 @@
 page_title: "iru_custom_script List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Lists Kandji Custom Script resources.
+  Lists Iru Custom Script resources.
 ---
 
 # iru_custom_script (List Resource)
 
-Lists Kandji Custom Script resources.
+Lists Iru Custom Script resources.
 
 ## Example Usage
 

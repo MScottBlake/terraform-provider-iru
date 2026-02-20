@@ -3,12 +3,12 @@
 page_title: "iru_custom_scripts Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all custom scripts in the Kandji instance.
+  List all custom scripts in the Iru instance.
 ---
 
 # iru_custom_scripts (Data Source)
 
-List all custom scripts in the Kandji instance.
+List all custom scripts in the Iru instance.
 
 ## Example Usage
 

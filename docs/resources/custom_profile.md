@@ -3,12 +3,12 @@
 page_title: "iru_custom_profile Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji Custom Profile library item.
+  Manages an Iru Custom Profile library item.
 ---
 
 # iru_custom_profile (Resource)
 
-Manages a Kandji Custom Profile library item.
+Manages an Iru Custom Profile library item.
 
 ## Example Usage
 

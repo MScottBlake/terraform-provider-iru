@@ -3,12 +3,12 @@
 page_title: "iru_in_house_app List Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Lists Kandji In House App resources.
+  Lists Iru In House App resources.
 ---
 
 # iru_in_house_app (List Resource)
 
-Lists Kandji In House App resources.
+Lists Iru In House App resources.
 
 ## Example Usage
 

@@ -28,9 +28,9 @@ func (r *adeIntegrationListResource) Metadata(ctx context.Context, req resource.
 	resp.TypeName = req.ProviderTypeName + "_ade_integration"
 }
 
-func (r *adeIntegrationListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Kandji Ade Integration resources.",	}
+func (r *adeIntegrationListResource) ListResourceConfigSchema(ctx context.Context, req list.ListResourceSchemaRequest, resp *list.ListResourceSchemaResponse) {	resp.Schema = listschema.Schema{		MarkdownDescription: "Lists Iru Ade Integration resources.",	}
 	resp.Schema = listschema.Schema{
-		MarkdownDescription: "Lists Kandji ADE Integrations.",
+		MarkdownDescription: "Lists Iru ADE Integrations.",
 	}
 }
 

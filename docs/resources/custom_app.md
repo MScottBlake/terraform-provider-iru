@@ -3,12 +3,12 @@
 page_title: "iru_custom_app Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji Custom App library item (PKG, ZIP, or IMG). This resource defines the installation and enforcement settings for custom software. Note: You must handle the file upload to S3 out-of-band and provide the file_key obtained from the Iru upload endpoint.
+  Manages an Iru Custom App library item (PKG, ZIP, or IMG). This resource defines the installation and enforcement settings for custom software. Note: You must handle the file upload to S3 out-of-band and provide the file_key obtained from the Iru upload endpoint.
 ---
 
 # iru_custom_app (Resource)
 
-Manages a Kandji Custom App library item (PKG, ZIP, or IMG). This resource defines the installation and enforcement settings for custom software. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.
+Manages an Iru Custom App library item (PKG, ZIP, or IMG). This resource defines the installation and enforcement settings for custom software. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.
 
 ## Example Usage
 

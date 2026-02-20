@@ -3,12 +3,12 @@
 page_title: "iru_custom_profiles Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all custom profiles in the Kandji instance.
+  List all custom profiles in the Iru instance.
 ---
 
 # iru_custom_profiles (Data Source)
 
-List all custom profiles in the Kandji instance.
+List all custom profiles in the Iru instance.
 
 ## Example Usage
 

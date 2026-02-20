@@ -3,12 +3,12 @@
 page_title: "iru_custom_script Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji Custom Script library item.
+  Manages an Iru Custom Script library item.
 ---
 
 # iru_custom_script (Resource)
 
-Manages a Kandji Custom Script library item.
+Manages an Iru Custom Script library item.
 
 ## Example Usage
 

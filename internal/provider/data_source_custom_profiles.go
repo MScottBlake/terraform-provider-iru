@@ -47,7 +47,7 @@ func (d *customProfilesDataSource) Metadata(ctx context.Context, req datasource.
 
 func (d *customProfilesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List all custom profiles in the Kandji instance.",
+		MarkdownDescription: "List all custom profiles in the Iru instance.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

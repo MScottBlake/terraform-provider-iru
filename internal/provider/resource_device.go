@@ -49,7 +49,7 @@ func (r *deviceResource) Metadata(ctx context.Context, req resource.MetadataRequ
 
 func (r *deviceResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji Device. Note: Devices cannot be created via Terraform, only imported and managed.",
+		MarkdownDescription: "Manages an Iru Device. Note: Devices cannot be created via Terraform, only imported and managed.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

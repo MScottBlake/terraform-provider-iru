@@ -3,12 +3,12 @@
 page_title: "iru_blueprints Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all blueprints in the Kandji instance.
+  List all blueprints in the Iru instance.
 ---
 
 # iru_blueprints (Data Source)
 
-List all blueprints in the Kandji instance.
+List all blueprints in the Iru instance.
 
 ## Example Usage
 

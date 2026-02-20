@@ -40,7 +40,7 @@ func (d *tagsDataSource) Metadata(ctx context.Context, req datasource.MetadataRe
 
 func (d *tagsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List all tags in the Kandji instance.",
+		MarkdownDescription: "List all tags in the Iru instance.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

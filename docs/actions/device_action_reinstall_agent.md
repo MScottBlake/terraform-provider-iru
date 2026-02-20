@@ -3,12 +3,12 @@
 page_title: "iru_device_action_reinstall_agent Action - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Reinstalls the Kandji Agent on macOS devices.
+  Reinstalls the Iru Agent on macOS devices.
 ---
 
 # iru_device_action_reinstall_agent (Action)
 
-Reinstalls the Kandji Agent on macOS devices.
+Reinstalls the Iru Agent on macOS devices.
 
 ## Example Usage
 

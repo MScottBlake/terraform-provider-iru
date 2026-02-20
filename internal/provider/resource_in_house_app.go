@@ -46,7 +46,7 @@ func (r *inHouseAppResource) Metadata(ctx context.Context, req resource.Metadata
 
 func (r *inHouseAppResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji In-House App (.ipa) library item for iOS, iPadOS, or tvOS. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.",
+		MarkdownDescription: "Manages an Iru In-House App (.ipa) library item for iOS, iPadOS, or tvOS. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
