@@ -26,12 +26,23 @@ To use the provider locally for testing without a registry, you can build it int
 go build -o ~/.terraform.d/plugins/github.com/MScottBlake/iru/0.0.1/darwin_arm64/terraform-provider-iru -ldflags="-X main.version=0.0.1"
 ```
 
-## Developing the Provider
+### Configure Terraform for Local Use
 
-To compile and install the provider to your `$GOPATH/bin` directory:
+Once built, you can use the provider in your Terraform configuration by pointing the `source` to the directory you built it in.
 
-```sh
-go install .
+```hcl
+terraform {
+  required_providers {
+    iru = {
+      source  = "github.com/MScottBlake/iru"
+      version = "0.0.1"
+    }
+  }
+}
+
+provider "iru" {
+  # configuration options
+}
 ```
 
 ### Documentation
