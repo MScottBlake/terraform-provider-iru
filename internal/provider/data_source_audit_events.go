@@ -47,7 +47,7 @@ func (d *auditEventsDataSource) Metadata(ctx context.Context, req datasource.Met
 
 func (d *auditEventsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List audit log events.",
+		MarkdownDescription: "List audit log events from the Activity module. This data source provides a global view of actions performed in the Iru instance, including blueprint changes, device enrollment, and administrative actions.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

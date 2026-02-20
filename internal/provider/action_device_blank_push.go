@@ -30,7 +30,7 @@ func (a *deviceBlankPushAction) Metadata(ctx context.Context, req action.Metadat
 
 func (a *deviceBlankPushAction) Schema(ctx context.Context, req action.SchemaRequest, resp *action.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Sends a blank push to a specific device. This is an imperative action.",
+		MarkdownDescription: "Sends a blank push to a specific device. This is an imperative action used to wake up a device and prompt it to check in with the MDM server.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,

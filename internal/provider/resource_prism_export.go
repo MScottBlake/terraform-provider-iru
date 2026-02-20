@@ -37,7 +37,7 @@ func (r *prismExportResource) Metadata(ctx context.Context, req resource.Metadat
 
 func (r *prismExportResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Request and retrieve a Prism category export.",
+		MarkdownDescription: "Request and retrieve a Prism category export. This resource initiates an asynchronous export job and provides a signed URL to download the results once complete. Note: Signed URLs are temporary.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

@@ -41,7 +41,7 @@ func (r *tagResource) Metadata(ctx context.Context, req resource.MetadataRequest
 
 func (r *tagResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji Tag.",
+		MarkdownDescription: "Manages a Tag in Iru. Tags are used to organize and scope devices, blueprints, and library items.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

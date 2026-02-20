@@ -67,21 +67,21 @@ func (r *customScriptResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"execution_frequency": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The execution frequency. Valid values: once, every_15_min, every_day, no_enforcement.",
+				MarkdownDescription: "The execution frequency. Options: `once`, `every_15_min`, `every_day`, `no_enforcement`.",
 			},
 			"restart": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether to restart the computer after script execution.",
+				MarkdownDescription: "Whether to restart the computer after the script successfully executes.",
 			},
 			"script": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The content of the script.",
+				MarkdownDescription: "The content of the main script. Usually starts with a shebang (e.g., `#!/bin/zsh`).",
 			},
 			"remediation_script": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The content of the remediation script.",
+				MarkdownDescription: "The content of the remediation script. This runs if the main script exits with a non-zero status.",
 			},
 			"show_in_self_service": schema.BoolAttribute{
 				Optional:            true,

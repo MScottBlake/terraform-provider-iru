@@ -3,12 +3,12 @@
 page_title: "iru_device_note Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Device Note.
+  Manages a Note attached to a specific Device. Notes are useful for tracking internal administrative metadata about a device.
 ---
 
 # iru_device_note (Resource)
 
-Manages a Device Note.
+Manages a Note attached to a specific Device. Notes are useful for tracking internal administrative metadata about a device.
 
 ## Example Usage
 

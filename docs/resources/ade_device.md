@@ -3,12 +3,12 @@
 page_title: "iru_ade_device Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji ADE Device. Note: ADE Devices cannot be created via Terraform, only imported and managed.
+  Manages an Automated Device Enrollment (ADE) device record. These records represent devices synced from Apple Business Manager before they are fully enrolled in MDM. This resource allows managing assignments like blueprint and user. Note: ADE Devices cannot be created via Terraform; they must be imported after syncing from Apple.
 ---
 
 # iru_ade_device (Resource)
 
-Manages a Kandji ADE Device. Note: ADE Devices cannot be created via Terraform, only imported and managed.
+Manages an Automated Device Enrollment (ADE) device record. These records represent devices synced from Apple Business Manager before they are fully enrolled in MDM. This resource allows managing assignments like blueprint and user. Note: ADE Devices cannot be created via Terraform; they must be imported after syncing from Apple.
 
 ## Example Usage
 
@@ -29,19 +29,19 @@ resource "iru_ade_device" "example" {
 ### Optional
 
 - `asset_tag` (String) The asset tag of the Device.
-- `blueprint_id` (String) The ID of the blueprint assigned to the Device.
-- `use_blueprint_routing` (Boolean) Whether to use Blueprint Routing for this device. If true, blueprint_id should be null.
-- `user_id` (String) The ID of the user assigned to the Device.
+- `blueprint_id` (String) The UUID of the blueprint assigned to the Device. Triggering a change will update the assignment in Iru.
+- `use_blueprint_routing` (Boolean) Whether to use Blueprint Routing for this device. If `true`, `blueprint_id` must be null.
+- `user_id` (String) The UUID of the user assigned to the Device. Triggering a change will update the assignment in Iru.
 
 ### Read-Only
 
 - `color` (String) The color of the Device.
-- `dep_account` (String) The DEP account of the Device.
+- `dep_account` (String) The UUID of the ADE/DEP integration this device belongs to.
 - `description` (String) The description of the Device.
-- `device_family` (String) The device family of the Device.
+- `device_family` (String) The device family (e.g., `Mac`, `iPhone`, `iPad`).
 - `id` (String) The unique identifier for the ADE Device.
-- `is_enrolled` (Boolean) Whether the device is enrolled.
+- `is_enrolled` (Boolean) Whether the device has completed MDM enrollment.
 - `model` (String) The model of the Device.
-- `os` (String) The OS of the Device.
-- `profile_status` (String) The profile status of the Device.
+- `os` (String) The operating system type (e.g., `OSX`, `iOS`).
+- `profile_status` (String) The status of the ADE enrollment profile (e.g., `assigned`, `pushed`).
 - `serial_number` (String) The serial number of the Device.

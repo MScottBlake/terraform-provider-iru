@@ -54,7 +54,7 @@ func (r *adeIntegrationResource) Metadata(ctx context.Context, req resource.Meta
 
 func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji ADE Integration.",
+		MarkdownDescription: "Manages an Automated Device Enrollment (ADE) integration with Apple Business Manager. This resource handles the MDM server token (.p7m) and enrollment settings.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -65,25 +65,25 @@ func (r *adeIntegrationResource) Schema(ctx context.Context, req resource.Schema
 			},
 			"blueprint_id": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The UUID of the default blueprint to associate with the integration. Required if use_blueprint_routing is false.",
+				MarkdownDescription: "The UUID of the default blueprint to associate with the integration. Required if `use_blueprint_routing` is `false`.",
 			},
 			"phone": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "A phone number for the integration.",
+				MarkdownDescription: "A support phone number for the integration (shown to users during enrollment).",
 			},
 			"email": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "An email address for the integration.",
+				MarkdownDescription: "A support email address for the integration (shown to users during enrollment).",
 			},
 			"mdm_server_token_file": schema.StringAttribute{
 				Required:            true,
 				Sensitive:           true,
-				MarkdownDescription: "The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.",
+				MarkdownDescription: "The base64-encoded content of the MDM server token file (.p7m) downloaded from Apple Business Manager.",
 			},
 			"use_blueprint_routing": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether to use Blueprint Routing for this integration. If true, blueprint_id should be null.",
+				MarkdownDescription: "Whether to use Blueprint Routing for this integration. If `true`, `blueprint_id` must be null.",
 			},
 			"access_token_expiry": schema.StringAttribute{
 				Computed:            true,

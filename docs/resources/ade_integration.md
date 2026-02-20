@@ -3,12 +3,12 @@
 page_title: "iru_ade_integration Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji ADE Integration.
+  Manages an Automated Device Enrollment (ADE) integration with Apple Business Manager. This resource handles the MDM server token (.p7m) and enrollment settings.
 ---
 
 # iru_ade_integration (Resource)
 
-Manages a Kandji ADE Integration.
+Manages an Automated Device Enrollment (ADE) integration with Apple Business Manager. This resource handles the MDM server token (.p7m) and enrollment settings.
 
 ## Example Usage
 
@@ -26,14 +26,14 @@ resource "iru_ade_integration" "example" {
 
 ### Required
 
-- `email` (String) An email address for the integration.
-- `mdm_server_token_file` (String, Sensitive) The content of the MDM server token file (.p7m) downloaded from Apple Business Manager.
-- `phone` (String) A phone number for the integration.
+- `email` (String) A support email address for the integration (shown to users during enrollment).
+- `mdm_server_token_file` (String, Sensitive) The base64-encoded content of the MDM server token file (.p7m) downloaded from Apple Business Manager.
+- `phone` (String) A support phone number for the integration (shown to users during enrollment).
 
 ### Optional
 
-- `blueprint_id` (String) The UUID of the default blueprint to associate with the integration. Required if use_blueprint_routing is false.
-- `use_blueprint_routing` (Boolean) Whether to use Blueprint Routing for this integration. If true, blueprint_id should be null.
+- `blueprint_id` (String) The UUID of the default blueprint to associate with the integration. Required if `use_blueprint_routing` is `false`.
+- `use_blueprint_routing` (Boolean) Whether to use Blueprint Routing for this integration. If `true`, `blueprint_id` must be null.
 
 ### Read-Only
 

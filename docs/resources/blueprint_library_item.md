@@ -3,12 +3,12 @@
 page_title: "iru_blueprint_library_item Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Assigns a Library Item to a Blueprint.
+  Assigns a specific Library Item (App, Profile, Script, etc.) to a Blueprint. For Assignment Maps, an optional assignment_node_id can be specified to place the item in a specific node.
 ---
 
 # iru_blueprint_library_item (Resource)
 
-Assigns a Library Item to a Blueprint.
+Assigns a specific Library Item (App, Profile, Script, etc.) to a Blueprint. For Assignment Maps, an optional `assignment_node_id` can be specified to place the item in a specific node.
 
 ## Example Usage
 

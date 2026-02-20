@@ -3,12 +3,12 @@
 page_title: "iru_device_action_erase Action - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Erases a specific device. This is an imperative action.
+  Erases a specific device. This is a HIGHLY DESTRUCTIVE imperative action. Behavior varies by platform: macOS uses the PIN for Find My; Windows and Android support specific wipe modes and flags; and supported Apple devices can utilize Return to Service (RTS) for automated WiFi profile association after the wipe.
 ---
 
 # iru_device_action_erase (Action)
 
-Erases a specific device. This is an imperative action.
+Erases a specific device. This is a **HIGHLY DESTRUCTIVE** imperative action. Behavior varies by platform: macOS uses the PIN for Find My; Windows and Android support specific wipe modes and flags; and supported Apple devices can utilize Return to Service (RTS) for automated WiFi profile association after the wipe.
 
 ## Example Usage
 

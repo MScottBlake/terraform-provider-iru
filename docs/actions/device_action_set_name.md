@@ -3,12 +3,12 @@
 page_title: "iru_device_action_set_name Action - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Sets the name for a specific device. This is an imperative action.
+  Sets the display name for a specific device. This is an imperative action that updates the name in the Iru console and, where supported, on the device itself.
 ---
 
 # iru_device_action_set_name (Action)
 
-Sets the name for a specific device. This is an imperative action.
+Sets the display name for a specific device. This is an imperative action that updates the name in the Iru console and, where supported, on the device itself.
 
 ## Example Usage
 

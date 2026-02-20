@@ -53,7 +53,7 @@ func (r *adeDeviceResource) Metadata(ctx context.Context, req resource.MetadataR
 
 func (r *adeDeviceResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Kandji ADE Device. Note: ADE Devices cannot be created via Terraform, only imported and managed.",
+		MarkdownDescription: "Manages an Automated Device Enrollment (ADE) device record. These records represent devices synced from Apple Business Manager before they are fully enrolled in MDM. This resource allows managing assignments like blueprint and user. Note: ADE Devices cannot be created via Terraform; they must be imported after syncing from Apple.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -86,37 +86,37 @@ func (r *adeDeviceResource) Schema(ctx context.Context, req resource.SchemaReque
 			"blueprint_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The ID of the blueprint assigned to the Device.",
+				MarkdownDescription: "The UUID of the blueprint assigned to the Device. Triggering a change will update the assignment in Iru.",
 			},
 			"user_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The ID of the user assigned to the Device.",
+				MarkdownDescription: "The UUID of the user assigned to the Device. Triggering a change will update the assignment in Iru.",
 			},
 			"dep_account": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The DEP account of the Device.",
+				MarkdownDescription: "The UUID of the ADE/DEP integration this device belongs to.",
 			},
 			"device_family": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The device family of the Device.",
+				MarkdownDescription: "The device family (e.g., `Mac`, `iPhone`, `iPad`).",
 			},
 			"os": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The OS of the Device.",
+				MarkdownDescription: "The operating system type (e.g., `OSX`, `iOS`).",
 			},
 			"profile_status": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The profile status of the Device.",
+				MarkdownDescription: "The status of the ADE enrollment profile (e.g., `assigned`, `pushed`).",
 			},
 			"is_enrolled": schema.BoolAttribute{
 				Computed:            true,
-				MarkdownDescription: "Whether the device is enrolled.",
+				MarkdownDescription: "Whether the device has completed MDM enrollment.",
 			},
 			"use_blueprint_routing": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether to use Blueprint Routing for this device. If true, blueprint_id should be null.",
+				MarkdownDescription: "Whether to use Blueprint Routing for this device. If `true`, `blueprint_id` must be null.",
 			},
 		},
 	}

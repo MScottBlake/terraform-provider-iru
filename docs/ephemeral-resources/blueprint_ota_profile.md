@@ -3,12 +3,12 @@
 page_title: "iru_blueprint_ota_profile Ephemeral Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Fetch the manual enrollment profile (.mobileconfig) for a blueprint as an ephemeral resource.
+  Fetch the manual Over-the-Air (OTA) enrollment profile (.mobileconfig) for a specific blueprint. This is an ephemeral resource; the value is not stored in state.
 ---
 
 # iru_blueprint_ota_profile (Ephemeral Resource)
 
-Fetch the manual enrollment profile (.mobileconfig) for a blueprint as an ephemeral resource.
+Fetch the manual Over-the-Air (OTA) enrollment profile (.mobileconfig) for a specific blueprint. This is an ephemeral resource; the value is not stored in state.
 
 ## Example Usage
 
@@ -27,8 +27,8 @@ output "manual_profile" {
 
 ### Required
 
-- `blueprint_id` (String)
+- `blueprint_id` (String) The UUID of the blueprint.
 
 ### Read-Only
 
-- `profile_xml` (String)
+- `profile_xml` (String) The XML content of the manual enrollment profile.

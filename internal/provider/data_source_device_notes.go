@@ -39,7 +39,7 @@ func (d *deviceNotesDataSource) Metadata(ctx context.Context, req datasource.Met
 
 func (d *deviceNotesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List all notes for a specific device.",
+		MarkdownDescription: "List all notes associated with a specific device. Each note includes content, author, and timestamp information.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,

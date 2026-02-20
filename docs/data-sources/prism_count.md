@@ -3,12 +3,12 @@
 page_title: "iru_prism_count Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Get the count of items in a Prism category.
+  Retrieve the total number of items within a specific Prism reporting category (e.g., total number of installed apps or devices).
 ---
 
 # iru_prism_count (Data Source)
 
-Get the count of items in a Prism category.
+Retrieve the total number of items within a specific Prism reporting category (e.g., total number of installed apps or devices).
 
 ## Example Usage
 
@@ -27,9 +27,9 @@ output "total_apps" {
 
 ### Required
 
-- `category` (String) The Prism category (e.g., apps, device_information).
+- `category` (String) The Prism category to count (e.g., `apps`, `device_information`, `certificates`).
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `total_count` (Number)
+- `total_count` (Number) The total count of items in the specified category.

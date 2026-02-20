@@ -35,7 +35,7 @@ func (r *blueprintLibraryItemResource) Metadata(ctx context.Context, req resourc
 
 func (r *blueprintLibraryItemResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Assigns a Library Item to a Blueprint.",
+		MarkdownDescription: "Assigns a specific Library Item (App, Profile, Script, etc.) to a Blueprint. For Assignment Maps, an optional `assignment_node_id` can be specified to place the item in a specific node.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

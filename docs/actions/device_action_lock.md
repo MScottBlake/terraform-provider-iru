@@ -3,12 +3,12 @@
 page_title: "iru_device_action_lock Action - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Locks a specific device. This is an imperative action.
+  Locks a specific device. This is an imperative action. For macOS, a PIN should be provided. For iOS/iPadOS, the device is locked to the lock screen.
 ---
 
 # iru_device_action_lock (Action)
 
-Locks a specific device. This is an imperative action.
+Locks a specific device. This is an imperative action. For macOS, a PIN should be provided. For iOS/iPadOS, the device is locked to the lock screen.
 
 ## Example Usage
 

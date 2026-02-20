@@ -32,17 +32,18 @@ func (d *prismCountDataSource) Metadata(ctx context.Context, req datasource.Meta
 
 func (d *prismCountDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get the count of items in a Prism category.",
+		MarkdownDescription: "Retrieve the total number of items within a specific Prism reporting category (e.g., total number of installed apps or devices).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,
 			},
 			"category": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The Prism category (e.g., apps, device_information).",
+				MarkdownDescription: "The Prism category to count (e.g., `apps`, `device_information`, `certificates`).",
 			},
 			"total_count": schema.Int64Attribute{
-				Computed: true,
+				Computed:            true,
+				MarkdownDescription: "The total count of items in the specified category.",
 			},
 		},
 	}

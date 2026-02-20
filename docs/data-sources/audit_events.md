@@ -3,12 +3,12 @@
 page_title: "iru_audit_events Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List audit log events.
+  List audit log events from the Activity module. This data source provides a global view of actions performed in the Iru instance, including blueprint changes, device enrollment, and administrative actions.
 ---
 
 # iru_audit_events (Data Source)
 
-List audit log events.
+List audit log events from the Activity module. This data source provides a global view of actions performed in the Iru instance, including blueprint changes, device enrollment, and administrative actions.
 
 ## Example Usage
 

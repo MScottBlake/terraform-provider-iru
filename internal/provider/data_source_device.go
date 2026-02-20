@@ -37,7 +37,7 @@ func (d *deviceDataSource) Metadata(ctx context.Context, req datasource.Metadata
 
 func (d *deviceDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get details for a specific device.",
+		MarkdownDescription: "Get detailed information for a specific device, including its name, serial number, platform, and assignment status.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:            true,

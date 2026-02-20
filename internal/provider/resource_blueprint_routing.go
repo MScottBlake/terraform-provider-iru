@@ -32,7 +32,7 @@ func (r *blueprintRoutingResource) Metadata(ctx context.Context, req resource.Me
 
 func (r *blueprintRoutingResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages Blueprint Routing settings. This is a singleton resource.",
+		MarkdownDescription: "Manages global Blueprint Routing settings. Blueprint Routing allows devices to be automatically assigned to blueprints based on rules. This is a singleton resource that manages the enrollment code and its activation state.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

@@ -3,12 +3,12 @@
 page_title: "iru_device_notes Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List all notes for a specific device.
+  List all notes associated with a specific device. Each note includes content, author, and timestamp information.
 ---
 
 # iru_device_notes (Data Source)
 
-List all notes for a specific device.
+List all notes associated with a specific device. Each note includes content, author, and timestamp information.
 
 ## Example Usage
 

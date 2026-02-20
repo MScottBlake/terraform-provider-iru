@@ -35,7 +35,7 @@ func (r *deviceSecretsEphemeralResource) Metadata(ctx context.Context, req ephem
 
 func (r *deviceSecretsEphemeralResource) Schema(ctx context.Context, req ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Fetch secrets for a specific device as an ephemeral resource. These values are NOT stored in the Terraform state.",
+		MarkdownDescription: "Fetch sensitive secrets for a specific device, including Activation Lock bypass codes, FileVault recovery keys, and unlock PINs. This is an ephemeral resource; these highly sensitive values are NOT stored in the Terraform state.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,

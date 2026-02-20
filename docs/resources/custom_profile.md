@@ -29,7 +29,7 @@ resource "iru_custom_profile" "example" {
 ### Required
 
 - `name` (String) The name of the Custom Profile.
-- `profile_file` (String) The content of the .mobileconfig file.
+- `profile_file` (String) The content of the `.mobileconfig` file. Must be a valid Apple Configuration Profile XML.
 
 ### Optional
 
@@ -43,4 +43,4 @@ resource "iru_custom_profile" "example" {
 ### Read-Only
 
 - `id` (String) The unique identifier for the Custom Profile.
-- `mdm_identifier` (String) The MDM identifier of the profile.
+- `mdm_identifier` (String) The unique MDM identifier (PayloadIdentifier) extracted from the profile.

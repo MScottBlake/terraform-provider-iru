@@ -3,12 +3,12 @@
 page_title: "iru_device Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Get details for a specific device.
+  Get detailed information for a specific device, including its name, serial number, platform, and assignment status.
 ---
 
 # iru_device (Data Source)
 
-Get details for a specific device.
+Get detailed information for a specific device, including its name, serial number, platform, and assignment status.
 
 ## Example Usage
 

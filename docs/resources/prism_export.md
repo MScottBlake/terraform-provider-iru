@@ -3,12 +3,12 @@
 page_title: "iru_prism_export Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Request and retrieve a Prism category export.
+  Request and retrieve a Prism category export. This resource initiates an asynchronous export job and provides a signed URL to download the results once complete. Note: Signed URLs are temporary.
 ---
 
 # iru_prism_export (Resource)
 
-Request and retrieve a Prism category export.
+Request and retrieve a Prism category export. This resource initiates an asynchronous export job and provides a signed URL to download the results once complete. Note: Signed URLs are temporary.
 
 ## Example Usage
 

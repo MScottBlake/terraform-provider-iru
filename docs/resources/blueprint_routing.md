@@ -3,12 +3,12 @@
 page_title: "iru_blueprint_routing Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages Blueprint Routing settings. This is a singleton resource.
+  Manages global Blueprint Routing settings. Blueprint Routing allows devices to be automatically assigned to blueprints based on rules. This is a singleton resource that manages the enrollment code and its activation state.
 ---
 
 # iru_blueprint_routing (Resource)
 
-Manages Blueprint Routing settings. This is a singleton resource.
+Manages global Blueprint Routing settings. Blueprint Routing allows devices to be automatically assigned to blueprints based on rules. This is a singleton resource that manages the enrollment code and its activation state.
 
 ## Example Usage
 

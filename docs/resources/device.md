@@ -30,13 +30,13 @@ resource "iru_device" "example" {
 
 ### Optional
 
-- `asset_tag` (String) The asset tag of the Device.
-- `blueprint_id` (String) The ID of the blueprint assigned to the Device.
-- `user_id` (String) The ID of the user assigned to the Device.
+- `asset_tag` (String) The custom asset tag assigned to the Device.
+- `blueprint_id` (String) The UUID of the blueprint assigned to the Device. Changing this will trigger a blueprint move.
+- `user_id` (String) The UUID of the user assigned to the Device.
 
 ### Read-Only
 
-- `device_name` (String) The name of the Device. (Read-only)
+- `device_name` (String) The name of the Device. Note: To rename a device, use the `iru_device_action_set_name` action.
 - `id` (String) The unique identifier for the Device.
 - `model` (String) The model of the Device.
 - `os_version` (String) The OS version of the Device.

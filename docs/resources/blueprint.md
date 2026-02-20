@@ -30,13 +30,13 @@ resource "iru_blueprint" "example" {
 
 ### Optional
 
-- `color` (String) The color of the Blueprint.
+- `color` (String) The color of the Blueprint (e.g., 'aqua-800').
 - `description` (String) The description of the Blueprint.
 - `enrollment_code_active` (Boolean) Whether the enrollment code is active.
-- `icon` (String) The icon of the Blueprint.
-- `source_id` (String) The ID of the source blueprint to clone from.
-- `source_type` (String) The type of the source blueprint to clone from.
-- `type` (String) The type of the Blueprint. Options: classic, dynamic.
+- `icon` (String) The icon of the Blueprint (e.g., 'ss-files').
+- `source_id` (String) The ID of the source blueprint to clone from. Only used during creation.
+- `source_type` (String) The type of the source blueprint to clone from. Only used during creation. Options: `classic`, `map`.
+- `type` (String) The type of the Blueprint. Options: `classic`, `map`. Classic blueprints are standard lists of library items, while maps allow for conditional assignment logic.
 
 ### Read-Only
 

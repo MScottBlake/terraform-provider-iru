@@ -3,12 +3,12 @@
 page_title: "iru_device_secrets Ephemeral Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Fetch secrets for a specific device as an ephemeral resource. These values are NOT stored in the Terraform state.
+  Fetch sensitive secrets for a specific device, including Activation Lock bypass codes, FileVault recovery keys, and unlock PINs. This is an ephemeral resource; these highly sensitive values are NOT stored in the Terraform state.
 ---
 
 # iru_device_secrets (Ephemeral Resource)
 
-Fetch secrets for a specific device as an ephemeral resource. These values are NOT stored in the Terraform state.
+Fetch sensitive secrets for a specific device, including Activation Lock bypass codes, FileVault recovery keys, and unlock PINs. This is an ephemeral resource; these highly sensitive values are NOT stored in the Terraform state.
 
 ## Example Usage
 

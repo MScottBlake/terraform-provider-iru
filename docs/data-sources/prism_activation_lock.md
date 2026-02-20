@@ -3,12 +3,12 @@
 page_title: "iru_prism_activation_lock Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List Activation Lock status from Prism.
+  List Activation Lock status for Apple devices from Prism reporting. This includes whether Activation Lock is enabled and if a bypass code is available.
 ---
 
 # iru_prism_activation_lock (Data Source)
 
-List Activation Lock status from Prism.
+List Activation Lock status for Apple devices from Prism reporting. This includes whether Activation Lock is enabled and if a bypass code is available.
 
 ## Example Usage
 

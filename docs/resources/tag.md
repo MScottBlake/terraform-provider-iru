@@ -3,12 +3,12 @@
 page_title: "iru_tag Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji Tag.
+  Manages a Tag in Iru. Tags are used to organize and scope devices, blueprints, and library items.
 ---
 
 # iru_tag (Resource)
 
-Manages a Kandji Tag.
+Manages a Tag in Iru. Tags are used to organize and scope devices, blueprints, and library items.
 
 ## Example Usage
 

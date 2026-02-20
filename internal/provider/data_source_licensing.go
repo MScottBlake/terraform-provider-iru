@@ -37,7 +37,7 @@ func (d *licensingDataSource) Metadata(ctx context.Context, req datasource.Metad
 
 func (d *licensingDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get tenant licensing and utilization information.",
+		MarkdownDescription: "Get detailed Iru tenant licensing information, including the total number of licensed slots and the current device utilization across platforms.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

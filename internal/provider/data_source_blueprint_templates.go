@@ -3,6 +3,8 @@ package provider
 import (
 	"context"
 
+	"fmt"
+
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -70,7 +72,7 @@ func (d *blueprintTemplatesDataSource) Read(ctx context.Context, req datasource.
 
 	for _, t := range response.Results {
 		data.Templates = append(data.Templates, blueprintTemplateModel{
-			ID:   types.StringValue(t.ID),
+			ID:   types.StringValue(fmt.Sprintf("%d", t.ID)),
 			Name: types.StringValue(t.Name),
 		})
 	}

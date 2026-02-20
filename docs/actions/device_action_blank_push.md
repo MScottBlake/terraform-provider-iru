@@ -3,12 +3,12 @@
 page_title: "iru_device_action_blank_push Action - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Sends a blank push to a specific device. This is an imperative action.
+  Sends a blank push to a specific device. This is an imperative action used to wake up a device and prompt it to check in with the MDM server.
 ---
 
 # iru_device_action_blank_push (Action)
 
-Sends a blank push to a specific device. This is an imperative action.
+Sends a blank push to a specific device. This is an imperative action used to wake up a device and prompt it to check in with the MDM server.
 
 ## Example Usage
 

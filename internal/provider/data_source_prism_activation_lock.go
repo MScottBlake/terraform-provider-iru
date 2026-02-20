@@ -41,7 +41,7 @@ func (d *prismActivationLockDataSource) Metadata(ctx context.Context, req dataso
 
 func (d *prismActivationLockDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List Activation Lock status from Prism.",
+		MarkdownDescription: "List Activation Lock status for Apple devices from Prism reporting. This includes whether Activation Lock is enabled and if a bypass code is available.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed: true,

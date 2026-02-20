@@ -71,11 +71,11 @@ func (r *customProfileResource) Schema(ctx context.Context, req resource.SchemaR
 			},
 			"profile_file": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The content of the .mobileconfig file.",
+				MarkdownDescription: "The content of the `.mobileconfig` file. Must be a valid Apple Configuration Profile XML.",
 			},
 			"mdm_identifier": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The MDM identifier of the profile.",
+				MarkdownDescription: "The unique MDM identifier (PayloadIdentifier) extracted from the profile.",
 			},
 			"runs_on_mac": schema.BoolAttribute{
 				Optional:            true,

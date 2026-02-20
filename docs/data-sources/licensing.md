@@ -3,12 +3,12 @@
 page_title: "iru_licensing Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Get tenant licensing and utilization information.
+  Get detailed Iru tenant licensing information, including the total number of licensed slots and the current device utilization across platforms.
 ---
 
 # iru_licensing (Data Source)
 
-Get tenant licensing and utilization information.
+Get detailed Iru tenant licensing information, including the total number of licensed slots and the current device utilization across platforms.
 
 ## Example Usage
 

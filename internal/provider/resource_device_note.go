@@ -46,7 +46,7 @@ func (r *deviceNoteResource) Metadata(ctx context.Context, req resource.Metadata
 
 func (r *deviceNoteResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Manages a Device Note.",
+		MarkdownDescription: "Manages a Note attached to a specific Device. Notes are useful for tracking internal administrative metadata about a device.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,

@@ -69,17 +69,17 @@ func (r *blueprintResource) Schema(ctx context.Context, req resource.SchemaReque
 			"icon": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The icon of the Blueprint.",
+				MarkdownDescription: "The icon of the Blueprint (e.g., 'ss-files').",
 			},
 			"color": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The color of the Blueprint.",
+				MarkdownDescription: "The color of the Blueprint (e.g., 'aqua-800').",
 			},
 			"type": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The type of the Blueprint. Options: classic, dynamic.",
+				MarkdownDescription: "The type of the Blueprint. Options: `classic`, `map`. Classic blueprints are standard lists of library items, while maps allow for conditional assignment logic.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -95,14 +95,14 @@ func (r *blueprintResource) Schema(ctx context.Context, req resource.SchemaReque
 			},
 			"source_id": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The ID of the source blueprint to clone from.",
+				MarkdownDescription: "The ID of the source blueprint to clone from. Only used during creation.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"source_type": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The type of the source blueprint to clone from.",
+				MarkdownDescription: "The type of the source blueprint to clone from. Only used during creation. Options: `classic`, `map`.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},

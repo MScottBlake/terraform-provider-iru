@@ -33,13 +33,15 @@ func (r *blueprintOTAProfileEphemeralResource) Metadata(ctx context.Context, req
 
 func (r *blueprintOTAProfileEphemeralResource) Schema(ctx context.Context, req ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Fetch the manual enrollment profile (.mobileconfig) for a blueprint as an ephemeral resource.",
+		MarkdownDescription: "Fetch the manual Over-the-Air (OTA) enrollment profile (.mobileconfig) for a specific blueprint. This is an ephemeral resource; the value is not stored in state.",
 		Attributes: map[string]schema.Attribute{
 			"blueprint_id": schema.StringAttribute{
-				Required: true,
+				Required:            true,
+				MarkdownDescription: "The UUID of the blueprint.",
 			},
 			"profile_xml": schema.StringAttribute{
-				Computed: true,
+				Computed:            true,
+				MarkdownDescription: "The XML content of the manual enrollment profile.",
 			},
 		},
 	}

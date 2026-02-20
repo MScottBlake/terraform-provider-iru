@@ -60,22 +60,22 @@ func (r *deviceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			},
 			"device_name": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The name of the Device. (Read-only)",
+				MarkdownDescription: "The name of the Device. Note: To rename a device, use the `iru_device_action_set_name` action.",
 			},
 			"asset_tag": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The asset tag of the Device.",
+				MarkdownDescription: "The custom asset tag assigned to the Device.",
 			},
 			"blueprint_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The ID of the blueprint assigned to the Device.",
+				MarkdownDescription: "The UUID of the blueprint assigned to the Device. Changing this will trigger a blueprint move.",
 			},
 			"user_id": schema.StringAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "The ID of the user assigned to the Device.",
+				MarkdownDescription: "The UUID of the user assigned to the Device.",
 			},
 			"serial_number": schema.StringAttribute{
 				Computed:            true,

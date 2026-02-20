@@ -3,12 +3,12 @@
 page_title: "iru_ade_public_key Ephemeral Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Fetch the ADE public key as an ephemeral resource.
+  Fetch the ADE public key required to create an MDM server connection in Apple Business Manager. This is an ephemeral resource; the value is not stored in state.
 ---
 
 # iru_ade_public_key (Ephemeral Resource)
 
-Fetch the ADE public key as an ephemeral resource.
+Fetch the ADE public key required to create an MDM server connection in Apple Business Manager. This is an ephemeral resource; the value is not stored in state.
 
 ## Example Usage
 
@@ -25,4 +25,4 @@ output "public_key" {
 
 ### Read-Only
 
-- `public_key` (String)
+- `public_key` (String) The PEM-encoded public key.

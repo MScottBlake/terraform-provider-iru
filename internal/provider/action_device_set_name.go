@@ -31,7 +31,7 @@ func (a *deviceSetNameAction) Metadata(ctx context.Context, req action.MetadataR
 
 func (a *deviceSetNameAction) Schema(ctx context.Context, req action.SchemaRequest, resp *action.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Sets the name for a specific device. This is an imperative action.",
+		MarkdownDescription: "Sets the display name for a specific device. This is an imperative action that updates the name in the Iru console and, where supported, on the device itself.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,

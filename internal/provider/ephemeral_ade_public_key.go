@@ -32,10 +32,11 @@ func (r *adePublicKeyEphemeralResource) Metadata(ctx context.Context, req epheme
 
 func (r *adePublicKeyEphemeralResource) Schema(ctx context.Context, req ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Fetch the ADE public key as an ephemeral resource.",
+		MarkdownDescription: "Fetch the ADE public key required to create an MDM server connection in Apple Business Manager. This is an ephemeral resource; the value is not stored in state.",
 		Attributes: map[string]schema.Attribute{
 			"public_key": schema.StringAttribute{
-				Computed: true,
+				Computed:            true,
+				MarkdownDescription: "The PEM-encoded public key.",
 			},
 		},
 	}

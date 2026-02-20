@@ -3,20 +3,20 @@
 page_title: "iru_blueprint_templates Data Source - terraform-provider-iru"
 subcategory: ""
 description: |-
-  List available blueprint templates.
+  List available Blueprint templates.
 ---
 
 # iru_blueprint_templates (Data Source)
 
-List available blueprint templates.
+List available Blueprint templates.
 
 ## Example Usage
 
 ```terraform
-data "iru_blueprint_templates" "all" {}
+data "iru_blueprint_templates" "example" {}
 
 output "blueprint_templates" {
-  value = data.iru_blueprint_templates.all.templates
+  value = data.iru_blueprint_templates.example.templates
 }
 ```
 
@@ -25,7 +25,6 @@ output "blueprint_templates" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
 - `templates` (Attributes List) (see [below for nested schema](#nestedatt--templates))
 
 <a id="nestedatt--templates"></a>
@@ -33,5 +32,5 @@ output "blueprint_templates" {
 
 Read-Only:
 
-- `id` (Number)
+- `id` (String)
 - `name` (String)

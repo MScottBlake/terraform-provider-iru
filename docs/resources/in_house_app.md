@@ -3,12 +3,12 @@
 page_title: "iru_in_house_app Resource - terraform-provider-iru"
 subcategory: ""
 description: |-
-  Manages a Kandji In-House App (.ipa) library item. Note: You must handle the file upload to S3 out-of-band and provide the file_key.
+  Manages a Kandji In-House App (.ipa) library item for iOS, iPadOS, or tvOS. Note: You must handle the file upload to S3 out-of-band and provide the file_key obtained from the Iru upload endpoint.
 ---
 
 # iru_in_house_app (Resource)
 
-Manages a Kandji In-House App (.ipa) library item. Note: You must handle the file upload to S3 out-of-band and provide the file_key.
+Manages a Kandji In-House App (.ipa) library item for iOS, iPadOS, or tvOS. Note: You must handle the file upload to S3 out-of-band and provide the `file_key` obtained from the Iru upload endpoint.
 
 ## Example Usage
 

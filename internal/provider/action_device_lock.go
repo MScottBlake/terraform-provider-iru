@@ -30,7 +30,7 @@ func (a *deviceLockAction) Metadata(ctx context.Context, req action.MetadataRequ
 
 func (a *deviceLockAction) Schema(ctx context.Context, req action.SchemaRequest, resp *action.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Locks a specific device. This is an imperative action.",
+		MarkdownDescription: "Locks a specific device. This is an imperative action. For macOS, a PIN should be provided. For iOS/iPadOS, the device is locked to the lock screen.",
 		Attributes: map[string]schema.Attribute{
 			"device_id": schema.StringAttribute{
 				Required:            true,
