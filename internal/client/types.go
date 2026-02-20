@@ -42,7 +42,7 @@ type ADEIntegration struct {
 
 // Device represents an Iru Device.
 type Device struct {
-	ID           string `json:"id,omitempty"`
+	ID           string `json:"device_id,omitempty"`
 	DeviceName   string `json:"device_name,omitempty"`
 	AssetTag     string `json:"asset_tag,omitempty"`
 	SerialNumber string `json:"serial_number,omitempty"`
