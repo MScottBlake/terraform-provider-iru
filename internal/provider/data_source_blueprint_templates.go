@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/MScottBlake/terraform-provider-iru/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -21,12 +20,11 @@ type blueprintTemplatesDataSource struct {
 }
 
 type blueprintTemplatesDataSourceModel struct {
-	ID        types.String            `tfsdk:"id"`
 	Templates []blueprintTemplateModel `tfsdk:"templates"`
 }
 
 type blueprintTemplateModel struct {
-	ID   types.Int64  `tfsdk:"id"`
+	ID   types.String `tfsdk:"id"`
 	Name types.String `tfsdk:"name"`
 }
 
@@ -36,21 +34,14 @@ func (d *blueprintTemplatesDataSource) Metadata(ctx context.Context, req datasou
 
 func (d *blueprintTemplatesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "List available blueprint templates.",
+		MarkdownDescription: "List available Blueprint templates.",
 		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed: true,
-			},
 			"templates": schema.ListNestedAttribute{
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
-						"id": schema.Int64Attribute{
-							Computed: true,
-						},
-						"name": schema.StringAttribute{
-							Computed: true,
-						},
+						"id":   schema.StringAttribute{Computed: true},
+						"name": schema.StringAttribute{Computed: true},
 					},
 				},
 			},
@@ -68,21 +59,20 @@ func (d *blueprintTemplatesDataSource) Configure(ctx context.Context, req dataso
 func (d *blueprintTemplatesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data blueprintTemplatesDataSourceModel
 
-	var response client.BlueprintTemplateList
-	err := d.client.DoRequest(ctx, "GET", "/api/v1/blueprints/templates", nil, &response)
+	var response struct {
+		Results []client.BlueprintTemplate `json:"results"`
+	}
+	err := d.client.DoRequest(ctx, "GET", "/api/v1/blueprints/templates/", nil, &response)
 	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list blueprint templates, got error: %s", err))
+		resp.Diagnostics.AddError("Client Error", "Unable to read blueprint templates")
 		return
 	}
 
-	data.ID = types.StringValue("blueprint_templates")
-	for _, cat := range response.Results {
-		for _, t := range cat.Templates {
-			data.Templates = append(data.Templates, blueprintTemplateModel{
-				ID:   types.Int64Value(int64(t.ID)),
-				Name: types.StringValue(t.Name),
-			})
-		}
+	for _, t := range response.Results {
+		data.Templates = append(data.Templates, blueprintTemplateModel{
+			ID:   types.StringValue(t.ID),
+			Name: types.StringValue(t.Name),
+		})
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
