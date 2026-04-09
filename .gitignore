@@ -40,3 +40,8 @@ Thumbs.db
 
 # Environment
 .env
+_raw
+
+#Gemini
+.gemini
+GEMINI.md
