@@ -41,6 +41,7 @@ type adeDeviceResourceModel struct {
 	ProfileStatus       types.String `tfsdk:"profile_status"`
 	IsEnrolled          types.Bool   `tfsdk:"is_enrolled"`
 	UseBlueprintRouting types.Bool   `tfsdk:"use_blueprint_routing"`
+	OverrideDEPProfileID types.String `tfsdk:"override_dep_profile_id"`
 }
 
 type adeDeviceResourceIdentityModel struct {
@@ -117,6 +118,11 @@ func (r *adeDeviceResource) Schema(ctx context.Context, req resource.SchemaReque
 				Optional:            true,
 				Computed:            true,
 				MarkdownDescription: "Whether to use Blueprint Routing for this device. If `true`, `blueprint_id` must be null.",
+			},
+			"override_dep_profile_id": schema.StringAttribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "The UUID of the DEP profile to override for this device. This is used when you want a device to use a specific DEP profile instead of the default one assigned to the ADE integration.",
 			},
 		},
 	}
@@ -211,6 +217,9 @@ func (r *adeDeviceResource) Update(ctx context.Context, req resource.UpdateReque
 	if !plan.UseBlueprintRouting.Equal(state.UseBlueprintRouting) {
 		updateRequest["use_blueprint_routing"] = plan.UseBlueprintRouting.ValueBool()
 	}
+	if !plan.OverrideDEPProfileID.Equal(state.OverrideDEPProfileID) {
+		updateRequest["override_dep_profile_id"] = plan.OverrideDEPProfileID.ValueString()
+	}
 	
 	if len(updateRequest) > 0 {
 		var deviceResponse client.ADEDevice
@@ -255,4 +264,5 @@ func (r *adeDeviceResource) updateModelWithResponse(data *adeDeviceResourceModel
 	data.ProfileStatus = types.StringValue(resp.ProfileStatus)
 	data.IsEnrolled = types.BoolValue(resp.IsEnrolled)
 	data.UseBlueprintRouting = types.BoolValue(resp.UseBlueprintRouting)
+	data.OverrideDEPProfileID = types.StringValue(resp.OverrideDEPProfileID)
 }
