@@ -171,15 +171,22 @@ func (r *customAppResource) Create(ctx context.Context, req resource.CreateReque
 
 func (r *customAppResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data customAppResourceModel
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-	if resp.Diagnostics.HasError() {
-		return
+
+	// State is null when the resource is imported via an identity import block.
+	if !req.State.Raw.IsNull() {
+		resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
+	// Identity is null when the resource is imported via the ID string.
 	var identity customAppResourceIdentityModel
-	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
-	if resp.Diagnostics.HasError() {
-		return
+	if req.Identity != nil && !req.Identity.Raw.IsNull() {
+		resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	id := data.ID.ValueString()
@@ -195,6 +202,8 @@ func (r *customAppResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 
 	r.mapFromClient(&data, &appResponse)
+	identity.ID = data.ID
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
@@ -238,7 +247,7 @@ func (r *customAppResource) Delete(ctx context.Context, req resource.DeleteReque
 }
 
 func (r *customAppResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 }
 
 func (r *customAppResource) mapToClient(data *customAppResourceModel) client.CustomApp {

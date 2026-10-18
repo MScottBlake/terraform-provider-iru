@@ -134,12 +134,30 @@ func (r *deviceNoteResource) Create(ctx context.Context, req resource.CreateRequ
 
 func (r *deviceNoteResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data deviceNoteResourceModel
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-	if resp.Diagnostics.HasError() {
-		return
+
+	// State is null when the resource is imported via an identity import block.
+	if !req.State.Raw.IsNull() {
+		resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
-	idParts := strings.Split(data.ID.ValueString(), ":")
+	// Identity is null when the resource is imported via the ID string.
+	var identity deviceNoteResourceIdentityModel
+	if req.Identity != nil && !req.Identity.Raw.IsNull() {
+		resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	id := data.ID.ValueString()
+	if id == "" {
+		id = identity.ID.ValueString()
+	}
+
+	idParts := strings.Split(id, ":")
 	if len(idParts) != 2 {
 		resp.Diagnostics.AddError("Invalid ID", "The ID must be in the format device_id:note_id")
 		return
@@ -154,13 +172,17 @@ func (r *deviceNoteResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
+	data.ID = types.StringValue(id)
 	data.DeviceID = types.StringValue(deviceID)
 	data.Content = types.StringValue(noteResp.Content)
 	data.Author = types.StringValue(noteResp.Author)
 	data.CreatedAt = types.StringValue(noteResp.CreatedAt)
 	data.UpdatedAt = types.StringValue(noteResp.UpdatedAt)
 
+	identity.ID = types.StringValue(id)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
 }
 
 func (r *deviceNoteResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -208,5 +230,5 @@ func (r *deviceNoteResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *deviceNoteResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 }

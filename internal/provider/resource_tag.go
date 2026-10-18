@@ -119,15 +119,21 @@ func (r *tagResource) Create(ctx context.Context, req resource.CreateRequest, re
 func (r *tagResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data tagResourceModel
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-	if resp.Diagnostics.HasError() {
-		return
+	// State is null when the resource is imported via an identity import block.
+	if !req.State.Raw.IsNull() {
+		resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
+	// Identity is null when the resource is imported via the ID string.
 	var identity tagResourceIdentityModel
-	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
-	if resp.Diagnostics.HasError() {
-		return
+	if req.Identity != nil && !req.Identity.Raw.IsNull() {
+		resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	id := data.ID.ValueString()
@@ -135,14 +141,15 @@ func (r *tagResource) Read(ctx context.Context, req resource.ReadRequest, resp *
 		id = identity.ID.ValueString()
 	}
 
-	var tagResponse client.Tag
-	err := r.client.DoRequest(ctx, "GET", "/api/v1/tags/"+id, nil, &tagResponse)
+	tagResponse, err := r.findTagByID(ctx, id)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read tag, got error: %s", err))
 		return
 	}
 
+	data.ID = types.StringValue(id)
 	data.Name = types.StringValue(tagResponse.Name)
+	identity.ID = types.StringValue(id)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	resp.Diagnostics.Append(resp.Identity.Set(ctx, &identity)...)
@@ -193,5 +200,35 @@ func (r *tagResource) Delete(ctx context.Context, req resource.DeleteRequest, re
 }
 
 func (r *tagResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
+}
+
+// findTagByID locates a single tag via the list endpoint. The Iru API does
+// not expose a GET /api/v1/tags/{tag_id} endpoint, so reading an individual
+// tag requires paging through the list results.
+func (r *tagResource) findTagByID(ctx context.Context, id string) (*client.Tag, error) {
+	const pageSize = 300
+	offset := 0
+
+	for {
+		var listResp struct {
+			Results []client.Tag `json:"results"`
+		}
+
+		path := fmt.Sprintf("/api/v1/tags?limit=%d&offset=%d", pageSize, offset)
+		if err := r.client.DoRequest(ctx, "GET", path, nil, &listResp); err != nil {
+			return nil, err
+		}
+
+		for _, tag := range listResp.Results {
+			if tag.ID == id {
+				return &tag, nil
+			}
+		}
+
+		if len(listResp.Results) < pageSize {
+			return nil, fmt.Errorf("tag with id %q not found", id)
+		}
+		offset += len(listResp.Results)
+	}
 }
