@@ -165,15 +165,21 @@ func (r *customScriptResource) Create(ctx context.Context, req resource.CreateRe
 func (r *customScriptResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var data customScriptResourceModel
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-	if resp.Diagnostics.HasError() {
-		return
+	// State is null when the resource is imported via an identity import block.
+	if !req.State.Raw.IsNull() {
+		resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
+	// Identity is null when the resource is imported via the ID string.
 	var identity customScriptResourceIdentityModel
-	resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
-	if resp.Diagnostics.HasError() {
-		return
+	if req.Identity != nil && !req.Identity.Raw.IsNull() {
+		resp.Diagnostics.Append(req.Identity.Get(ctx, &identity)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
 	}
 
 	id := data.ID.ValueString()
@@ -188,6 +194,8 @@ func (r *customScriptResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
+	data.ID = types.StringValue(id)
+	identity.ID = types.StringValue(id)
 	data.Name = types.StringValue(scriptResponse.Name)
 	data.Active = types.BoolValue(scriptResponse.Active)
 	data.ExecutionFrequency = types.StringValue(scriptResponse.ExecutionFrequency)
@@ -257,5 +265,5 @@ func (r *customScriptResource) Delete(ctx context.Context, req resource.DeleteRe
 }
 
 func (r *customScriptResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 }
