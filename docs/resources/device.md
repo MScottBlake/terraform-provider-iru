@@ -22,6 +22,7 @@ resource "iru_device" "example" {
   asset_tag    = "IT-MAC-001"
   blueprint_id = "c0148e35-c734-4402-b2fb-1c61aab72550"
   user_id      = "8a9f88d9-e7f4-47e6-9326-fd4b39534c4e"
+  tags         = ["marketing", "macbook-pro"]
 }
 ```
 
@@ -32,6 +33,7 @@ resource "iru_device" "example" {
 
 - `asset_tag` (String) The custom asset tag assigned to the Device.
 - `blueprint_id` (String) The UUID of the blueprint assigned to the Device. Changing this will trigger a blueprint move.
+- `tags` (List of String) A list of tags assigned to the Device. Updating this will update the tags in Iru.
 - `user_id` (String) The UUID of the user assigned to the Device.
 
 ### Read-Only

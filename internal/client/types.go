@@ -42,16 +42,17 @@ type ADEIntegration struct {
 
 // Device represents an Iru Device.
 type Device struct {
-	ID           string `json:"device_id,omitempty"`
-	DeviceName   string `json:"device_name,omitempty"`
-	AssetTag     string `json:"asset_tag,omitempty"`
-	SerialNumber string `json:"serial_number,omitempty"`
-	Model        string `json:"model,omitempty"`
-	OSVersion    string `json:"os_version,omitempty"`
-	BlueprintID  string `json:"blueprint_id,omitempty"`
-	UserID       string `json:"user_id,omitempty"`
-	Platform     string `json:"platform,omitempty"`
-	LastCheckIn  string `json:"last_check_in,omitempty"`
+	ID           string   `json:"device_id,omitempty"`
+	DeviceName   string   `json:"device_name,omitempty"`
+	AssetTag     string   `json:"asset_tag,omitempty"`
+	SerialNumber string   `json:"serial_number,omitempty"`
+	Model        string   `json:"model,omitempty"`
+	OSVersion    string   `json:"os_version,omitempty"`
+	BlueprintID  string   `json:"blueprint_id,omitempty"`
+	UserID       string   `json:"user_id,omitempty"`
+	Platform     string   `json:"platform,omitempty"`
+	LastCheckIn  string   `json:"last_check_in,omitempty"`
+	Tags         []string `json:"tags,omitempty"`
 }
 
 // DeviceNote represents a note assigned to a device.
@@ -299,20 +300,57 @@ type BlueprintLibraryItem struct {
 
 // ADEDevice represents an Iru ADE Device.
 type ADEDevice struct {
-	ID            string `json:"device_id,omitempty"`
-	SerialNumber  string `json:"serial_number"`
-	Model         string `json:"model"`
-	Description   string `json:"description"`
-	AssetTag      string `json:"asset_tag"`
-	Color         string `json:"color"`
-	BlueprintID   string `json:"blueprint_id"`
-	UserID        string `json:"user_id"`
-	DEPAccount    string `json:"dep_account"`
-	DeviceFamily  string `json:"device_family"`
-	OS            string `json:"os"`
-	ProfileStatus string `json:"profile_status"`
-	IsEnrolled    bool   `json:"is_enrolled"`
-	UseBlueprintRouting bool `json:"use_blueprint_routing"`
+	ID                  string   `json:"device_id,omitempty"`
+	SerialNumber        string   `json:"serial_number"`
+	Model               string   `json:"model"`
+	Description         string   `json:"description"`
+	AssetTag            string   `json:"asset_tag"`
+	Color               string   `json:"color"`
+	BlueprintID         string   `json:"blueprint_id"`
+	UserID              string   `json:"user_id"`
+	DEPAccount          string   `json:"dep_account"`
+	DeviceFamily        string   `json:"device_family"`
+	OS                  string   `json:"os"`
+	ProfileStatus       string   `json:"profile_status"`
+	IsEnrolled          bool     `json:"is_enrolled"`
+	UseBlueprintRouting bool     `json:"use_blueprint_routing"`
+	OverrideDEPProfileID string  `json:"override_dep_profile_id,omitempty"`
+	Tags                []string `json:"tags,omitempty"`
+}
+
+// ThreatV2 represents a detected threat from the v2 API.
+type ThreatV2 struct {
+	ID                 string   `json:"id"`
+	ThreatName         string   `json:"threat_name"`
+	Classification     string   `json:"classification"`
+	Status             string   `json:"status"`
+	ManagementState    string   `json:"management_state"`
+	Severity           string   `json:"severity"`
+	Tags               []string `json:"tags"`
+	DeviceName         string   `json:"device_name"`
+	DeviceID           string   `json:"device_id"`
+	DetectionDate      string   `json:"detection_date"`
+	FilePath           string   `json:"file_path"`
+	FileHash           string   `json:"file_hash"`
+	DeviceSerialNumber string   `json:"device_serial_number"`
+}
+
+// BehavioralDetectionV2 represents a behavioral detection event from the v2 API.
+type BehavioralDetectionV2 struct {
+	ID              string   `json:"id"`
+	ThreatID        string   `json:"threat_id"`
+	Description     string   `json:"description"`
+	Classification  string   `json:"classification"`
+	Status          string   `json:"status"`
+	ManagementState string   `json:"management_state"`
+	Severity        string   `json:"severity"`
+	Tags            []string `json:"tags"`
+	DetectionDate   string   `json:"detection_date"`
+	DeviceInfo      struct {
+		ID           string `json:"id"`
+		Name         string `json:"name"`
+		SerialNumber string `json:"serial_number"`
+	} `json:"device_info"`
 }
 
 // BlueprintRouting represents the Blueprint Routing settings.

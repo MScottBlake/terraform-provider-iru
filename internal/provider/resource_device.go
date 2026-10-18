@@ -32,6 +32,7 @@ type deviceResourceModel struct {
 	AssetTag    types.String `tfsdk:"asset_tag"`
 	BlueprintID types.String `tfsdk:"blueprint_id"`
 	UserID      types.String `tfsdk:"user_id"`
+	Tags        types.List   `tfsdk:"tags"`
 	// Read-only fields
 	SerialNumber types.String `tfsdk:"serial_number"`
 	Model        types.String `tfsdk:"model"`
@@ -76,6 +77,12 @@ func (r *deviceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				MarkdownDescription: "The UUID of the user assigned to the Device.",
+			},
+			"tags": schema.ListAttribute{
+				ElementType:         types.StringType,
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "A list of tags assigned to the Device. Updating this will update the tags in Iru.",
 			},
 			"serial_number": schema.StringAttribute{
 				Computed:            true,
@@ -162,6 +169,14 @@ func (r *deviceResource) Read(ctx context.Context, req resource.ReadRequest, res
 	data.AssetTag = types.StringValue(deviceResponse.AssetTag)
 	data.BlueprintID = types.StringValue(deviceResponse.BlueprintID)
 	data.UserID = types.StringValue(deviceResponse.UserID)
+	
+	tagsList, diags := types.ListValueFrom(ctx, types.StringType, deviceResponse.Tags)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	data.Tags = tagsList
+
 	data.SerialNumber = types.StringValue(deviceResponse.SerialNumber)
 	data.Model = types.StringValue(deviceResponse.Model)
 	data.OSVersion = types.StringValue(deviceResponse.OSVersion)
@@ -188,7 +203,16 @@ func (r *deviceResource) Update(ctx context.Context, req resource.UpdateRequest,
 		updateRequest["asset_tag"] = plan.AssetTag.ValueString()
 	}
 	if !plan.UserID.Equal(state.UserID) {
-		updateRequest["user_id"] = plan.UserID.ValueString()
+		updateRequest["user"] = plan.UserID.ValueString()
+	}
+	if !plan.Tags.Equal(state.Tags) {
+		var tags []string
+		diags := plan.Tags.ElementsAs(ctx, &tags, false)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		updateRequest["tags"] = tags
 	}
 	
 	if len(updateRequest) > 0 {
@@ -204,6 +228,13 @@ func (r *deviceResource) Update(ctx context.Context, req resource.UpdateRequest,
 		plan.AssetTag = types.StringValue(deviceResponse.AssetTag)
 		plan.BlueprintID = types.StringValue(deviceResponse.BlueprintID)
 		plan.UserID = types.StringValue(deviceResponse.UserID)
+
+		tagsList, diags := types.ListValueFrom(ctx, types.StringType, deviceResponse.Tags)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		plan.Tags = tagsList
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)

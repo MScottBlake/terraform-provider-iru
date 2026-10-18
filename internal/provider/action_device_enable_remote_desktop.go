@@ -56,7 +56,11 @@ func (a *deviceEnableRemoteDesktopAction) Invoke(ctx context.Context, req action
 	}
 
 	deviceID := data.DeviceID.ValueString()
-	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/enable-remote-desktop", deviceID), nil, nil)
+	payload := map[string]interface{}{
+		"EnableRemoteDesktop": true,
+	}
+	err := a.client.DoRequest(ctx, "POST", fmt.Sprintf("/api/v1/devices/%s/action/remotedesktop", deviceID), payload, nil)
+
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to invoke enable remote desktop, got error: %s", err))
 		return

@@ -7,4 +7,5 @@ resource "iru_device" "example" {
   asset_tag    = "IT-MAC-001"
   blueprint_id = "c0148e35-c734-4402-b2fb-1c61aab72550"
   user_id      = "8a9f88d9-e7f4-47e6-9326-fd4b39534c4e"
+  tags         = ["marketing", "macbook-pro"]
 }

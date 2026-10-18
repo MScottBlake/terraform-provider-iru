@@ -170,7 +170,9 @@ func (p *IruProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		NewPrismStartupSettingsDataSource,
 		NewPrismTransparencyDatabaseDataSource,
 		NewThreatsDataSource,
+		NewThreatsV2DataSource,
 		NewBehavioralDetectionsDataSource,
+		NewBehavioralDetectionsV2DataSource,
 		NewSelfServiceCategoriesDataSource,
 	}
 }
@@ -184,9 +186,7 @@ func (p *IruProvider) Actions(ctx context.Context) []func() action.Action {
 		NewDeviceBlankPushAction,
 		NewDeviceSetNameAction,
 		NewDeviceEnableRemoteDesktopAction,
-		NewDeviceForceCheckInAction,
 		NewDeviceClearPasscodeAction,
-		NewDeviceBypassActivationLockAction,
 		NewDeviceUnlockAccountAction,
 		NewDeviceReinstallAgentAction,
 		NewDeviceDailyCheckinAction,
@@ -201,6 +201,7 @@ func (p *IruProvider) Actions(ctx context.Context) []func() action.Action {
 		NewDeviceDeleteUserAction,
 		NewDeviceRefreshCellularPlansAction,
 		NewDeviceRenewMDMProfileAction,
+		NewDeviceResetWorkProfilePasscodeAction,
 	}
 }
 
